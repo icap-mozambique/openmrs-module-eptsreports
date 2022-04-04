@@ -16,8 +16,10 @@ package org.openmrs.module.eptsreports.reporting.library.cohorts;
 import java.util.Date;
 import org.openmrs.Location;
 import org.openmrs.module.eptsreports.reporting.library.queries.PrepNewQueries;
+import org.openmrs.module.eptsreports.reporting.library.queries.PrepNewStartingSectorQueries;
 import org.openmrs.module.eptsreports.reporting.library.queries.TxNewQueries;
 import org.openmrs.module.eptsreports.reporting.utils.EptsReportUtils;
+import org.openmrs.module.eptsreports.reporting.utils.PrepNewKeyPopType;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
@@ -89,6 +91,34 @@ public class PrepNewCohortQueries {
             mappings));
 
     definition.setCompositionString("ENROLLED-IN-PREP AND COMMUNITY-DISPENSATION");
+
+    return definition;
+  }
+
+  public CohortDefinition getSectorClientsNewlyEnrolledInPrep(
+      Integer sector, Integer conceitoKeyPop, PrepNewKeyPopType keyPop) {
+    final CompositionCohortDefinition definition = new CompositionCohortDefinition();
+
+    definition.setName("PREP NEW");
+    definition.addParameter(new Parameter("startDate", "Start Date", Date.class));
+    definition.addParameter(new Parameter("endDate", "End Date", Date.class));
+    definition.addParameter(new Parameter("location", "location", Location.class));
+
+    final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
+
+    definition.addSearch(
+        "ENROLLED-IN-PREP", EptsReportUtils.map(this.getClientsNewlyEnrolledInPrep(), mappings));
+
+    definition.addSearch(
+        "SECTOR",
+        EptsReportUtils.map(
+            this.genericCohorts.generalSql(
+                "findPrEPNewBySector",
+                PrepNewStartingSectorQueries.QUERY.findClientsNewlyEnrolledInPrepAtCPN(
+                    sector, conceitoKeyPop, keyPop)),
+            mappings));
+
+    definition.setCompositionString("ENROLLED-IN-PREP AND SECTOR");
 
     return definition;
   }
