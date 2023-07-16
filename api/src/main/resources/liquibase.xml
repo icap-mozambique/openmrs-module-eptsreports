@@ -21,7 +21,7 @@
 		baseColumnNames="owner" referencedTableName="users" referencedColumnNames="user_id" 
 		/> </changeSet> -->
 
-
+<!--
 	<changeSet id="20230320-0730" author="icap-mozambique"
 		runAlways="true">
 		<comment>
@@ -30,5 +30,5 @@
 		<sqlFile
 			path="_metadata/SESPMetadataForRelease312_PlatformVersion_2x_20032023.sql" />
 	</changeSet>
-
+ -->
 </databaseChangeLog>
