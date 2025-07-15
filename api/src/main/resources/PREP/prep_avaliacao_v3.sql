@@ -1,6 +1,5 @@
 SELECT pa.patient_id,
-pid.identifier AS _NID,
-	
+	pid.identifier AS _NID,
     (SELECT 
 		CASE
 			WHEN obs_in.value_coded = 165287 THEN "Adolescentes e Jovens em Risco"
@@ -207,6 +206,7 @@ pid.identifier AS _NID,
         AND obs_in.value_coded =1901
     ) AS _GRUPO_ALVO_TRABALHADOR_SEXO,
     TIMESTAMPDIFF(YEAR, pe.birthdate, :endDate) AS _IDADE,
+	pe.birthdate AS _DATA_NASCIMENTO,
 	pe.gender AS _SEXO,
 	(SELECT 
 		CASE
@@ -1186,7 +1186,7 @@ LEFT JOIN
            			) pid2
            		where pid1.patient_id=pid2.patient_id and pid1.patient_identifier_id=pid2.id
            	) pid on pid.patient_id=pa.patient_id
-           	
+			
 where pa.patient_id IN (
 	-- Pacientes que Pertencem ao grupo de analise
 	SELECT enc.patient_id FROM encounter enc 

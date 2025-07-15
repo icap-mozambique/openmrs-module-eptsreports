@@ -29,6 +29,25 @@
 		<sqlFile
 			path="_metadata/SESPMetadataForRelease420_20062025.sql" />
 	</changeSet>
+	
+	
+	
+	<changeSet id="20250630-16:00" author="icap">
+		<comment>
+			SESP Release version 4.2.1
+		</comment>
+		<sqlFile path="_metadata/TbResultsDataReconstruction.sql" encoding="UTF-8" splitStatements="true" endDelimiter="#" />
+		<sql>CALL TbResultsDataReconstruction()</sql>
+		<sql>DROP PROCEDURE IF EXISTS TbResultsDataReconstruction</sql>
+</changeSet>
+	
+	
+	
+	
+	
+	
+	
+	
 
 	<!--changeSet id="20230808-001" author="icap">
 		<comment>
