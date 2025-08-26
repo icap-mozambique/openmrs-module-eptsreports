@@ -53,6 +53,9 @@ public class TxCurrCohortQueries {
 
   private static final String FIND_PATIENTS_MCC_TREATMENT = "PFACT/TRATAMENTO_MENINGITE.sql";
 
+  private static final String FIND_PATIENTS_ACTIVE_WITHOUT_RECEPCAO =
+      "TX_CURR/TX_CURR_WITHOUT_RECEPCAO_LEVANTOU.sql";
+
   @Autowired private GenericCohortQueries genericCohorts;
 
   @DocumentedDefinition(value = "patientsWhoAreActiveOnART")
@@ -72,6 +75,31 @@ public class TxCurrCohortQueries {
             this.genericCohorts.generalSql(
                 "Finding patients who are currently enrolled on ART",
                 TxCurrQuery.findPatientsInTxCurr(TxCurrColumnsQuantity.PATIENT_ID)),
+            mappings));
+
+    definition.setCompositionString("TXCURR");
+
+    return definition;
+  }
+
+  @DocumentedDefinition(value = "patientsWhoAreActiveOnARTWithoutRecepcaoLEvantou")
+  public CohortDefinition findPatientsWhoAreActiveOnARTWithoutRecepcaoLevantou() {
+    final CompositionCohortDefinition definition = new CompositionCohortDefinition();
+
+    definition.setName("patientsWhoAreActiveOnART");
+
+    definition.addParameter(new Parameter("endDate", "End Date", Date.class));
+    definition.addParameter(new Parameter("location", "location", Location.class));
+
+    final String mappings = "endDate=${endDate},location=${location}";
+
+    definition.addSearch(
+        "TXCURR",
+        EptsReportUtils.map(
+            this.genericCohorts.generalSql(
+                "Finding patients who are currently enrolled on ART Withou Recepcao Levantou",
+                EptsQuerysUtils.loadQuery(
+                    TxCurrCohortQueries.FIND_PATIENTS_ACTIVE_WITHOUT_RECEPCAO)),
             mappings));
 
     definition.setCompositionString("TXCURR");
