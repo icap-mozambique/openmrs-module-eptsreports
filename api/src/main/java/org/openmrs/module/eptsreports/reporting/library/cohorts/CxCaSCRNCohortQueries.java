@@ -17,8 +17,9 @@ public class CxCaSCRNCohortQueries {
 
   @Autowired private TxCurrCohortQueries txCurrCohortQueries;
 
+  @Autowired private TxNewCohortQueries txNewCohortQueries;
+
   private static final int CONCEPT_2094 = 2094;
-  private static final int CONCEPT_165436 = 165436;
   private static final int ANSWER_2093 = 2093;
   private static final int ANSWER_664 = 664;
   private static final int ANSWER_703 = 703;
@@ -59,7 +60,8 @@ public class CxCaSCRNCohortQueries {
   @DocumentedDefinition(
       value = "findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodNegative")
   public CohortDefinition
-      findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodNegative(int resultType) {
+      findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodNegative(
+          final int resultType) {
     final SqlCohortDefinition definition = new SqlCohortDefinition();
 
     definition.setName("findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriod");
@@ -70,7 +72,7 @@ public class CxCaSCRNCohortQueries {
     definition.setQuery(
         CxCaSCRNQueries.QUERY
             .findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodByReusult(
-                resultType, ANSWER_664));
+                resultType, CxCaSCRNCohortQueries.ANSWER_664));
 
     return definition;
   }
@@ -103,7 +105,7 @@ public class CxCaSCRNCohortQueries {
     definition.setQuery(
         CxCaSCRNQueries.QUERY
             .findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodByReusult(
-                CONCEPT_2094, ANSWER_703));
+                CxCaSCRNCohortQueries.CONCEPT_2094, CxCaSCRNCohortQueries.ANSWER_703));
 
     return definition;
   }
@@ -122,7 +124,7 @@ public class CxCaSCRNCohortQueries {
     definition.setQuery(
         CxCaSCRNQueries.QUERY
             .findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodByReusult(
-                CONCEPT_2094, ANSWER_2093));
+                CxCaSCRNCohortQueries.CONCEPT_2094, CxCaSCRNCohortQueries.ANSWER_2093));
 
     return definition;
   }
@@ -175,7 +177,7 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumerator")
-  public CohortDefinition getTotalNumerator() {
+  public CohortDefinition getTotalNumerator(final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumerator");
@@ -188,7 +190,7 @@ public class CxCaSCRNCohortQueries {
     definition.addSearch(
         "TXCURR",
         EptsReportUtils.map(
-            txCurrCohortQueries.findPatientsWhoAreActiveOnART(),
+            this.txCurrCohortQueries.findPatientsWhoAreActiveOnART(),
             "endDate=${endDate},location=${location}"));
 
     definition.addSearch(
@@ -198,11 +200,26 @@ public class CxCaSCRNCohortQueries {
 
     definition.setCompositionString(" TXCURR AND SCREENING");
 
+    if (isCommunity) {
+
+      final CohortDefinition communityDispensation =
+          this.txNewCohortQueries.communityDispensation();
+
+      definition.addSearch(
+          "COMMUNITY-DISPENSATION",
+          EptsReportUtils.map(
+              communityDispensation,
+              EptsReportUtils.removeMissingParameterMappingsFromCohortDefintion(
+                  communityDispensation, mappings)));
+
+      definition.setCompositionString("TXCURR AND SCREENING AND COMMUNITY-DISPENSATION");
+    }
+
     return definition;
   }
 
   @DocumentedDefinition(value = "getTotalNumerator")
-  public CohortDefinition getTotalNumeratorFirstScreening() {
+  public CohortDefinition getTotalNumeratorFirstScreening(final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorFirstScreening");
@@ -212,7 +229,8 @@ public class CxCaSCRNCohortQueries {
 
     final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
 
-    definition.addSearch("SCREENING", EptsReportUtils.map(this.getTotalNumerator(), mappings));
+    definition.addSearch(
+        "SCREENING", EptsReportUtils.map(this.getTotalNumerator(isCommunity), mappings));
 
     definition.addSearch(
         "PREVIOUS-SCREENING",
@@ -220,13 +238,23 @@ public class CxCaSCRNCohortQueries {
             this.findPatientsWithScreeningTestForCervicalCancerPreviousReportingPeriod(),
             mappings));
 
-    definition.setCompositionString("(SCREENING NOT PREVIOUS-SCREENING");
+    definition.setCompositionString("SCREENING NOT PREVIOUS-SCREENING");
+
+    if (isCommunity) {
+
+      definition.addSearch(
+          "COMMUNITY-DISPENSATION",
+          EptsReportUtils.map(this.txNewCohortQueries.communityDispensation(), mappings));
+
+      definition.setCompositionString(
+          "(SCREENING AND COMMUNITY-DISPENSATION) NOT PREVIOUS-SCREENING");
+    }
 
     return definition;
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorFirstScreeningNegative")
-  public CohortDefinition getTotalNumeratorFirstScreeningNegative() {
+  public CohortDefinition getTotalNumeratorFirstScreeningNegative(final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorFirstScreeningNegative");
@@ -237,13 +265,14 @@ public class CxCaSCRNCohortQueries {
     final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
 
     definition.addSearch(
-        "NUMERATOR", EptsReportUtils.map(this.getTotalNumeratorFirstScreening(), mappings));
+        "NUMERATOR",
+        EptsReportUtils.map(this.getTotalNumeratorFirstScreening(isCommunity), mappings));
 
     definition.addSearch(
         "VIA-NEGATIVE",
         EptsReportUtils.map(
             this.findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodNegative(
-                CONCEPT_2094),
+                CxCaSCRNCohortQueries.CONCEPT_2094),
             mappings));
 
     definition.addSearch(
@@ -256,7 +285,7 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorFirstScreeningPositive")
-  public CohortDefinition getTotalNumeratorFirstScreeningPositive() {
+  public CohortDefinition getTotalNumeratorFirstScreeningPositive(final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorFirstScreeningPositive");
@@ -267,7 +296,8 @@ public class CxCaSCRNCohortQueries {
     final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
 
     definition.addSearch(
-        "NUMERATOR", EptsReportUtils.map(this.getTotalNumeratorFirstScreening(), mappings));
+        "NUMERATOR",
+        EptsReportUtils.map(this.getTotalNumeratorFirstScreening(isCommunity), mappings));
 
     definition.addSearch(
         "SCREENING-POSITIVE",
@@ -281,7 +311,7 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorFirstScreeningSuspectCancer")
-  public CohortDefinition getTotalNumeratorFirstScreeningSuspectCancer() {
+  public CohortDefinition getTotalNumeratorFirstScreeningSuspectCancer(final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorFirstScreeningSuspectCancer");
@@ -292,7 +322,8 @@ public class CxCaSCRNCohortQueries {
     final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
 
     definition.addSearch(
-        "NUMERATOR", EptsReportUtils.map(this.getTotalNumeratorFirstScreening(), mappings));
+        "NUMERATOR",
+        EptsReportUtils.map(this.getTotalNumeratorFirstScreening(isCommunity), mappings));
 
     definition.addSearch(
         "SUSPECT-CANCER",
@@ -306,7 +337,8 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorRescreenedAfterPreviousNegativeNegative")
-  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousNegativeTotal() {
+  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousNegativeTotal(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorRescreenedAfterPreviousNegativeTotal");
@@ -316,7 +348,8 @@ public class CxCaSCRNCohortQueries {
 
     final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
 
-    definition.addSearch("SCREENING", EptsReportUtils.map(this.getTotalNumerator(), mappings));
+    definition.addSearch(
+        "SCREENING", EptsReportUtils.map(this.getTotalNumerator(isCommunity), mappings));
 
     definition.addSearch(
         "N2",
@@ -329,7 +362,8 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorRescreenedAfterPreviousNegativeNegative")
-  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousNegativeNegative() {
+  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousNegativeNegative(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorRescreenedAfterPreviousNegativeNegative");
@@ -343,7 +377,7 @@ public class CxCaSCRNCohortQueries {
         "VIA-NEGATIVE",
         EptsReportUtils.map(
             this.findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodNegative(
-                CONCEPT_2094),
+                CxCaSCRNCohortQueries.CONCEPT_2094),
             mappings));
 
     definition.addSearch(
@@ -353,7 +387,7 @@ public class CxCaSCRNCohortQueries {
     definition.addSearch(
         "N2",
         EptsReportUtils.map(
-            this.getTotalNumeratorRescreenedAfterPreviousNegativeTotal(), mappings));
+            this.getTotalNumeratorRescreenedAfterPreviousNegativeTotal(isCommunity), mappings));
 
     definition.setCompositionString("(VIA-NEGATIVE OR HPV-NEGATIVE) AND N2");
 
@@ -361,7 +395,8 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorRescreenedAfterPreviousNegativePositive")
-  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousNegativePositive() {
+  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousNegativePositive(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorRescreenedAfterPreviousNegativePositive");
@@ -380,7 +415,7 @@ public class CxCaSCRNCohortQueries {
     definition.addSearch(
         "P2",
         EptsReportUtils.map(
-            this.getTotalNumeratorRescreenedAfterPreviousNegativeTotal(), mappings));
+            this.getTotalNumeratorRescreenedAfterPreviousNegativeTotal(isCommunity), mappings));
 
     definition.setCompositionString("POSITIVE AND P2");
 
@@ -388,7 +423,8 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorRescreenedAfterPreviousNegativeSuspectCancer")
-  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousNegativeSuspectCancer() {
+  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousNegativeSuspectCancer(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorRescreenedAfterPreviousNegativeSuspectCancer");
@@ -407,7 +443,7 @@ public class CxCaSCRNCohortQueries {
     definition.addSearch(
         "S2",
         EptsReportUtils.map(
-            this.getTotalNumeratorRescreenedAfterPreviousNegativeTotal(), mappings));
+            this.getTotalNumeratorRescreenedAfterPreviousNegativeTotal(isCommunity), mappings));
 
     definition.setCompositionString("SUSPECT-CANCER AND S2");
 
@@ -439,7 +475,8 @@ public class CxCaSCRNCohortQueries {
         EptsReportUtils.map(
             this.findpatientwithScreeningTypeVisitAsPostTreatmentFollowUp(), mappings));
 
-    definition.addSearch("SCREENING", EptsReportUtils.map(this.getTotalNumerator(), mappings));
+    definition.addSearch(
+        "SCREENING", EptsReportUtils.map(this.getTotalNumerator(Boolean.FALSE), mappings));
 
     definition.setCompositionString("PREVIUS-SCREENING AND P2 AND SCREENING");
 
@@ -464,7 +501,7 @@ public class CxCaSCRNCohortQueries {
         "VIA-NEGATIVE",
         EptsReportUtils.map(
             this.findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodNegative(
-                CONCEPT_2094),
+                CxCaSCRNCohortQueries.CONCEPT_2094),
             mappings));
 
     definition.addSearch(
@@ -477,7 +514,8 @@ public class CxCaSCRNCohortQueries {
             this.getTotalNumeratorfindpatientwithScreeningTypeVisitAsPostTreatmentFollowUpTotal(),
             mappings));
 
-    definition.addSearch("SCREENING", EptsReportUtils.map(this.getTotalNumerator(), mappings));
+    definition.addSearch(
+        "SCREENING", EptsReportUtils.map(this.getTotalNumerator(Boolean.FALSE), mappings));
 
     definition.setCompositionString("(VIA-NEGATIVE OR HPV-NEGATIVE) AND P2 AND SCREENING");
 
@@ -509,7 +547,8 @@ public class CxCaSCRNCohortQueries {
             this.getTotalNumeratorfindpatientwithScreeningTypeVisitAsPostTreatmentFollowUpTotal(),
             mappings));
 
-    definition.addSearch("SCREENING", EptsReportUtils.map(this.getTotalNumerator(), mappings));
+    definition.addSearch(
+        "SCREENING", EptsReportUtils.map(this.getTotalNumerator(Boolean.FALSE), mappings));
 
     definition.setCompositionString("POSITIVE AND P2 AND SCREENING");
 
@@ -541,7 +580,8 @@ public class CxCaSCRNCohortQueries {
             this.getTotalNumeratorfindpatientwithScreeningTypeVisitAsPostTreatmentFollowUpTotal(),
             mappings));
 
-    definition.addSearch("SCREENING", EptsReportUtils.map(this.getTotalNumerator(), mappings));
+    definition.addSearch(
+        "SCREENING", EptsReportUtils.map(this.getTotalNumerator(Boolean.FALSE), mappings));
 
     definition.setCompositionString("SUSPECT-CANCER AND P2 AND SCREENING");
 
@@ -549,7 +589,8 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorRescreenedAfterPreviousPositiveTotal")
-  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousPositiveTotal() {
+  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousPositiveTotal(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorRescreenedAfterPreviousPositiveTotal");
@@ -559,7 +600,8 @@ public class CxCaSCRNCohortQueries {
 
     final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
 
-    definition.addSearch("SCREENING", EptsReportUtils.map(this.getTotalNumerator(), mappings));
+    definition.addSearch(
+        "SCREENING", EptsReportUtils.map(this.getTotalNumerator(isCommunity), mappings));
 
     definition.addSearch(
         "POSITIVE",
@@ -573,12 +615,12 @@ public class CxCaSCRNCohortQueries {
             mappings));
 
     definition.addSearch(
-        "FR", EptsReportUtils.map(this.getTotalNumeratorFirstScreening(), mappings));
+        "FR", EptsReportUtils.map(this.getTotalNumeratorFirstScreening(isCommunity), mappings));
 
     definition.addSearch(
         "RN",
         EptsReportUtils.map(
-            this.getTotalNumeratorRescreenedAfterPreviousNegativeTotal(), mappings));
+            this.getTotalNumeratorRescreenedAfterPreviousNegativeTotal(isCommunity), mappings));
 
     definition.setCompositionString("(SCREENING AND POSITIVE) NOT (PT OR FR OR RN) ");
 
@@ -586,7 +628,8 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorRescreenedAfterPreviousPositiveNegative")
-  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousPositiveNegative() {
+  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousPositiveNegative(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorRescreenedAfterPreviousPositiveNegative");
@@ -600,7 +643,7 @@ public class CxCaSCRNCohortQueries {
         "VIA-NEGATIVE",
         EptsReportUtils.map(
             this.findPatientsWithScreeningTestForCervicalCancerDuringReportingPeriodNegative(
-                CONCEPT_2094),
+                CxCaSCRNCohortQueries.CONCEPT_2094),
             mappings));
 
     definition.addSearch(
@@ -610,7 +653,7 @@ public class CxCaSCRNCohortQueries {
     definition.addSearch(
         "P2",
         EptsReportUtils.map(
-            this.getTotalNumeratorRescreenedAfterPreviousPositiveTotal(), mappings));
+            this.getTotalNumeratorRescreenedAfterPreviousPositiveTotal(isCommunity), mappings));
 
     definition.setCompositionString("(VIA-NEGATIVE OR HPV-NEGATIVE) AND P2");
 
@@ -618,7 +661,8 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorRescreenedAfterPreviousPositivePositive")
-  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousPositivePositive() {
+  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousPositivePositive(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorRescreenedAfterPreviousPositivePositive");
@@ -636,7 +680,7 @@ public class CxCaSCRNCohortQueries {
     definition.addSearch(
         "P2",
         EptsReportUtils.map(
-            this.getTotalNumeratorRescreenedAfterPreviousPositiveTotal(), mappings));
+            this.getTotalNumeratorRescreenedAfterPreviousPositiveTotal(isCommunity), mappings));
 
     definition.setCompositionString("POSITIVE AND P2");
 
@@ -644,7 +688,8 @@ public class CxCaSCRNCohortQueries {
   }
 
   @DocumentedDefinition(value = "getTotalNumeratorRescreenedAfterPreviousPositiveSuspectCancer")
-  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousPositiveSuspectCancer() {
+  public CohortDefinition getTotalNumeratorRescreenedAfterPreviousPositiveSuspectCancer(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getTotalNumeratorRescreenedAfterPreviousPositiveSuspectCancer");
@@ -662,7 +707,7 @@ public class CxCaSCRNCohortQueries {
     definition.addSearch(
         "P2",
         EptsReportUtils.map(
-            this.getTotalNumeratorRescreenedAfterPreviousPositiveTotal(), mappings));
+            this.getTotalNumeratorRescreenedAfterPreviousPositiveTotal(isCommunity), mappings));
 
     definition.setCompositionString("SUSPECT-CANCER AND P2");
 

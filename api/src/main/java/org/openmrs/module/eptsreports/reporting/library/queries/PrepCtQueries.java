@@ -1,6 +1,8 @@
 /** */
 package org.openmrs.module.eptsreports.reporting.library.queries;
 
+import org.openmrs.module.eptsreports.reporting.utils.PrepNewKeyPopType;
+
 public interface PrepCtQueries {
 
   class QUERY {
@@ -423,5 +425,92 @@ public interface PrepCtQueries {
             + "		and e.location_id=:location "
             + "		group by p.patient_id "
             + ") prep ";
+
+    public static String findClientsNewlyEnrolledInPrepBySubpopulation(
+        final PrepNewKeyPopType keyPop) {
+
+      String query =
+          "SELECT patient_id FROM (                                                                                                        		"
+              + "	select p.patient_id, min(encounter_datetime) data_keypop                                                                        "
+              + "	from patient p                                                                                                                  "
+              + "	inner join encounter e on p.patient_id=e.patient_id                                                                             "
+              + "	inner join obs  o on e.encounter_id=o.encounter_id                                                                              "
+              + "	where e.voided=0 and o.voided=0 and p.voided=0 and                                                                              "
+              + "	e.encounter_type = 80 and o.concept_id = 165196 and o.value_coded in (1903,6332,165287,1902,1908,1995,1982)  and                "
+              + "	o.obs_datetime <=:endDate and e.location_id=:location                                                                           "
+              + "	group by p.patient_id ) grupo_alvo  																							";
+
+      switch (keyPop) {
+        case PREGNANT:
+          query = query.replace("in (1903,6332,165287,1902,1908,1995,1982)", "=1982");
+          break;
+
+        case LACTATION:
+          query = query.replace("in (1903,6332,165287,1902,1908,1995,1982)", "=6332");
+          break;
+
+        case ADOLESCENTS_YOUTH_RISK:
+          query = query.replace("in (1903,6332,165287,1902,1908,1995,1982)", "=165287");
+          break;
+
+        case MILITARY:
+          query = query.replace("in (1903,6332,165287,1902,1908,1995,1982)", "=1902");
+          break;
+
+        case MINER:
+          query = query.replace("in (1903,6332,165287,1902,1908,1995,1982)", "=1908");
+          break;
+
+        case DRIVER:
+          query = query.replace("in (1903,6332,165287,1902,1908,1995,1982)", "=1903");
+          break;
+
+        case CASAIS_SERODISCORDANTE:
+          query = query.replace("in (1903,6332,165287,1902,1908,1995,1982)", "=1995");
+          break;
+
+          // use diferrent concept key
+        case HOMOSEXUAL:
+          query =
+              query.replace(
+                  "o.concept_id = 165196 and o.value_coded in (1903,6332,165287,1902,1908,1995,1982)",
+                  "o.concept_id = 23703 and o.value_coded=1377");
+          break;
+
+        case PRISIONER:
+          query =
+              query.replace(
+                  "o.concept_id = 165196 and o.value_coded in (1903,6332,165287,1902,1908,1995,1982)",
+                  "o.concept_id = 23703 and o.value_coded=20426");
+          break;
+
+        case SEXWORKER:
+          query =
+              query.replace(
+                  "o.concept_id = 165196 and o.value_coded in (1903,6332,165287,1902,1908,1995,1982)",
+                  "o.concept_id = 23703 and o.value_coded=1901");
+          break;
+
+        case DRUGUSER:
+          query =
+              query.replace(
+                  "o.concept_id = 165196 and o.value_coded in (1903,6332,165287,1902,1908,1995,1982)",
+                  "o.concept_id = 23703 and o.value_coded=20454");
+          break;
+
+        case TRANSGENDER:
+          query =
+              query.replace(
+                  "o.concept_id = 165196 and o.value_coded in (1903,6332,165287,1902,1908,1995,1982)",
+                  "o.concept_id = 23703 and o.value_coded=165205");
+          break;
+
+        case SPECIAL_CASE:
+          query = query.replace("in (1903,6332,165287,1902,1908,1995,1982)", "=1065");
+          break;
+      }
+
+      return query;
+    }
   }
 }

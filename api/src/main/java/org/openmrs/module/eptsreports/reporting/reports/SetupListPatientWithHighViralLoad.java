@@ -126,6 +126,7 @@ public class SetupListPatientWithHighViralLoad extends EptsPeriodIndicatorDataEx
     return Arrays.asList(reportDesign);
   }
 
+  @Override
   public List<Parameter> getParameters() {
     List<Parameter> parameters = new ArrayList<Parameter>();
     parameters.add(ReportingConstants.START_DATE_PARAMETER);

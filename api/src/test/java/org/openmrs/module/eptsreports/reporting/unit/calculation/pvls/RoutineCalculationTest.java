@@ -331,7 +331,7 @@ public class RoutineCalculationTest extends PowerMockBaseContextTest {
             anyList(),
             eq(cohort),
             eq(Arrays.asList(location)),
-            (List<Concept>) anyList(),
+            anyList(),
             eq(TimeQualifier.FIRST),
             any(Date.class),
             eq(calculationContext)))

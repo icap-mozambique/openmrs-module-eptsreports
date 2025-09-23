@@ -31,6 +31,16 @@ public class TxRetDimensionCohort {
         EptsReportUtils.map(
             txRetCohortQueries.oneTo19WhoStartedTargetAtARTInitiation(),
             "endDate=${endDate},location=${location}"));
+    dim.addCohortDefinition(
+        "0104",
+        EptsReportUtils.map(
+            txRetCohortQueries.oneTo4WhoStartedTargetAtARTInitiation(),
+            "endDate=${endDate},location=${location}"));
+    dim.addCohortDefinition(
+        "0509",
+        EptsReportUtils.map(
+            txRetCohortQueries.fiveTo19WhoStartedTargetAtARTInitiation(),
+            "endDate=${endDate},location=${location}"));
     return dim;
   }
 
@@ -91,6 +101,28 @@ public class TxRetDimensionCohort {
         "50+M", EptsReportUtils.map(txRetCohortQueries.menOnArtAbove50(), mappings));
     dim.addCohortDefinition(
         "50+F", EptsReportUtils.map(txRetCohortQueries.womenOnArtAbove50(), mappings));
+    dim.addCohortDefinition(
+        "1-M", EptsReportUtils.map(txRetCohortQueries.menOnArtUnder1(), mappings));
+    dim.addCohortDefinition(
+        "1-F", EptsReportUtils.map(txRetCohortQueries.womenOnArtUnder1(), mappings));
+    dim.addCohortDefinition(
+        "1-4M", EptsReportUtils.map(txRetCohortQueries.menOnArt1To4(), mappings));
+    dim.addCohortDefinition(
+        "1-4F", EptsReportUtils.map(txRetCohortQueries.womenOnArt1To4(), mappings));
+    dim.addCohortDefinition(
+        "5-9M", EptsReportUtils.map(txRetCohortQueries.menOnArt5To9(), mappings));
+    dim.addCohortDefinition(
+        "5-9F", EptsReportUtils.map(txRetCohortQueries.womenOnArt5To9(), mappings));
+
+    dim.addCohortDefinition(
+        "40-44M", EptsReportUtils.map(txRetCohortQueries.menOnArt40To44(), mappings));
+    dim.addCohortDefinition(
+        "40-44F", EptsReportUtils.map(txRetCohortQueries.womenOnArt40To44(), mappings));
+
+    dim.addCohortDefinition(
+        "45-49M", EptsReportUtils.map(txRetCohortQueries.menOnArt45To49(), mappings));
+    dim.addCohortDefinition(
+        "45-49F", EptsReportUtils.map(txRetCohortQueries.womenOnArt45To49(), mappings));
 
     return dim;
   }

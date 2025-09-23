@@ -1674,11 +1674,14 @@
 
 	<!--Reports to be Deleted -->
 	<globalProperty>
-		<property>eptsoldreports.4d214046-4543-4ee7-8dc5-576024cb32dc</property>
+		<property>eptsoldreports.4d214046-4543-4ee7-8dc5-576024cb32dc
+		</property>
 		<defaultValue>4d214046-4543-4ee7-8dc5-576024cb32dc</defaultValue>
-		<description>Report to be Deleted:LISTA DE PACIENTES QUE LEVANTARAM ARV NUM PERIODO</description>
+		<description>Report to be Deleted:LISTA DE PACIENTES QUE LEVANTARAM
+			ARV NUM PERIODO
+		</description>
 	</globalProperty>
-	
+
 
 	<!-- <dwr> <allow> <create creator="new" javascript="DWRFormEntryService"> 
 		<param name="class" value="org.openmrs.module.@MODULE_ID@.web.DWRFormEntryService"/> 
@@ -1713,5 +1716,4 @@
 		<file>messages_pt.properties</file>
 	</messages>
 	<!-- /Internationalization -->
-
 </module>

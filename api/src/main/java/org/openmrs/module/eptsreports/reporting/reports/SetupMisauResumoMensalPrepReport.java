@@ -129,6 +129,7 @@ public class SetupMisauResumoMensalPrepReport extends EptsPeriodIndicatorDataExp
     return Arrays.asList(reportDesign);
   }
 
+  @Override
   public List<Parameter> getParameters() {
     List<Parameter> parameters = new ArrayList<Parameter>();
     parameters.add(ReportingConstants.START_DATE_PARAMETER);

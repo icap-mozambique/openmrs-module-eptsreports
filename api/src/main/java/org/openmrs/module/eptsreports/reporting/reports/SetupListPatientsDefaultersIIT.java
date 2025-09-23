@@ -115,6 +115,7 @@ public class SetupListPatientsDefaultersIIT extends EptsDataExportManager {
     return Arrays.asList(reportDesign);
   }
 
+  @Override
   public List<Parameter> getParameters() {
     List<Parameter> parameters = new ArrayList<Parameter>();
     parameters.addAll(getCustomParameteres());

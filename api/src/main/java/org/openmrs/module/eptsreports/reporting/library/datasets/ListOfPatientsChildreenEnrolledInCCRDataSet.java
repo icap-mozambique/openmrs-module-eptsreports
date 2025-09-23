@@ -74,6 +74,7 @@ public class ListOfPatientsChildreenEnrolledInCCRDataSet extends BaseDataSet {
     return definition;
   }
 
+  @Override
   public List<Parameter> getParameters() {
     List<Parameter> parameters = new ArrayList<Parameter>();
     parameters.add(ReportingConstants.START_DATE_PARAMETER);

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MaxLastDateFromFilaSeguimentoRecepcaoCalculation extends BaseFghCalculation {
 
+  @Override
   public CalculationResultMap evaluate(
       Map<String, Object> parameterValues, EvaluationContext context) {
 

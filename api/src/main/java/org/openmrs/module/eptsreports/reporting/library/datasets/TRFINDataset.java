@@ -71,11 +71,12 @@ public class TRFINDataset extends BaseDataSet {
         this.eptsGeneralIndicator.getIndicator(
             "findPatientsWhoAreTransferredIn", EptsReportUtils.map(txTRFINDefinition, mappings));
 
-    dataSetDefinition.addDimension("gender", EptsReportUtils.map(eptsCommonDimension.gender(), ""));
+    dataSetDefinition.addDimension(
+        "gender", EptsReportUtils.map(this.eptsCommonDimension.gender(), ""));
     dataSetDefinition.addDimension(
         "age",
         EptsReportUtils.map(
-            eptsCommonDimension.age(ageDimensionCohort), "effectiveDate=${endDate}"));
+            this.eptsCommonDimension.age(this.ageDimensionCohort), "effectiveDate=${endDate}"));
 
     this.addDimensions(
         dataSetDefinition,

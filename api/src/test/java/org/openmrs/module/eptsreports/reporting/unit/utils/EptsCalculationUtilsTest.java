@@ -213,11 +213,11 @@ public class EptsCalculationUtilsTest extends PowerMockBaseContextTest {
     // returns arraylist for listresult
     Assert.assertEquals(Arrays.asList(r10, r11), EptsCalculationUtils.resultForPatient(map, 3));
     // returns null for false booleanresult
-    Assert.assertNull((Boolean) EptsCalculationUtils.resultForPatient(map, 4));
+    Assert.assertNull(EptsCalculationUtils.resultForPatient(map, 4));
     // returns true for false booleanresult
     Assert.assertTrue((Boolean) EptsCalculationUtils.resultForPatient(map, 5));
     // returns null for null booleanresult
-    Assert.assertNull((Boolean) EptsCalculationUtils.resultForPatient(map, 6));
+    Assert.assertNull(EptsCalculationUtils.resultForPatient(map, 6));
     // returns obs for Obsresult
     Assert.assertEquals(obs, EptsCalculationUtils.resultForPatient(map, 7));
     // retuns null for null obsresult

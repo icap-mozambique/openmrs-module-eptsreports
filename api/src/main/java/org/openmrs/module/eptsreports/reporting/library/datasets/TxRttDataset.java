@@ -55,12 +55,13 @@ public class TxRttDataset extends BaseDataSet {
     final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
 
     final CohortDefinition patientsOnRttDefinition = this.txRTTCohortQueries.getPatientsOnRTT();
-    CohortDefinition patientsWithCD4LessThan200 =
+    final CohortDefinition patientsWithCD4LessThan200 =
         this.txRTTCohortQueries.findPatientsWithCD4LessThan200();
-    CohortDefinition patientsWIthCD4GreaterOrEqual200 =
+    final CohortDefinition patientsWIthCD4GreaterOrEqual200 =
         this.txRTTCohortQueries.findPatientsWIthCD4GreaterOrEqual200();
-    CohortDefinition patientsWithUnknownCD4 = this.txRTTCohortQueries.findPatientsWithUnknownCD4();
-    CohortDefinition patientsNotEligibleToCD4 =
+    final CohortDefinition patientsWithUnknownCD4 =
+        this.txRTTCohortQueries.findPatientsWithUnknownCD4();
+    final CohortDefinition patientsNotEligibleToCD4 =
         this.txRTTCohortQueries.findPatientsNotEligibleToCD4();
 
     final CohortIndicator patientOnRttIndicator =
@@ -106,7 +107,7 @@ public class TxRttDataset extends BaseDataSet {
         SIXTY_TO_SIXTY_FOUR,
         ABOVE_SIXTY_FIVE);
 
-    definition.addDimension("gender", EptsReportUtils.map(eptsCommonDimension.gender(), ""));
+    definition.addDimension("gender", EptsReportUtils.map(this.eptsCommonDimension.gender(), ""));
 
     this.addAGenderDimensionForUnkwonAgeDimension(definition);
 
@@ -326,7 +327,7 @@ public class TxRttDataset extends BaseDataSet {
         "R-DurationIIT-LESS-3MONTHS",
         "Duration of IIT Before returning Treatment <3 months",
         EptsReportUtils.map(
-            eptsGeneralIndicator.getIndicator(
+            this.eptsGeneralIndicator.getIndicator(
                 "Experienced treatment interruption of  < 3 months before returning to treatment",
                 EptsReportUtils.map(
                     this.txRTTCohortQueries.getDurationInterruptionOfTreatmentLessThan3Months(),
@@ -338,7 +339,7 @@ public class TxRttDataset extends BaseDataSet {
         "R-DurationIIT-BETWEEN-3-5MONTHS",
         "Duration of IIT Before returning Treatment Between 3-5 months",
         EptsReportUtils.map(
-            eptsGeneralIndicator.getIndicator(
+            this.eptsGeneralIndicator.getIndicator(
                 "Experienced treatment interruption of   3-5 months before returning to treatment",
                 EptsReportUtils.map(
                     this.txRTTCohortQueries.getDurationInterruptionOfTreatmentBetween3And5Months(),
@@ -350,7 +351,7 @@ public class TxRttDataset extends BaseDataSet {
         "R-DurationIIT-GREATER-OR-EQUAL-6MONTHS",
         "Duration of IIT Before returning Treatment Greater Or Equal 6 months",
         EptsReportUtils.map(
-            eptsGeneralIndicator.getIndicator(
+            this.eptsGeneralIndicator.getIndicator(
                 "Experienced treatment interruption of  6 or more months before returning to treatment",
                 EptsReportUtils.map(
                     this.txRTTCohortQueries
@@ -363,7 +364,7 @@ public class TxRttDataset extends BaseDataSet {
         "PLHIVLESS12MONTH",
         "PLHIV <12 months",
         EptsReportUtils.map(
-            eptsGeneralIndicator.getIndicator(
+            this.eptsGeneralIndicator.getIndicator(
                 "Experienced treatment interruption of  <12 months before returning to treatment",
                 EptsReportUtils.map(
                     this.txRTTCohortQueries.getPLHIVLess12MonthCalculation(), mappings)),
@@ -374,7 +375,7 @@ public class TxRttDataset extends BaseDataSet {
         "PLHIVGREATER12MONTH",
         "PLHIV >=12 months",
         EptsReportUtils.map(
-            eptsGeneralIndicator.getIndicator(
+            this.eptsGeneralIndicator.getIndicator(
                 "Experienced treatment interruption of  12 or more months before returning to treatment",
                 EptsReportUtils.map(
                     this.txRTTCohortQueries.getPLHIVGreather12MonthCalculation(), mappings)),
@@ -385,7 +386,7 @@ public class TxRttDataset extends BaseDataSet {
         "PLHIVUNKOWN",
         "Unknown Duration",
         EptsReportUtils.map(
-            eptsGeneralIndicator.getIndicator(
+            this.eptsGeneralIndicator.getIndicator(
                 "patients PLHIV With unknown date of IIT ",
                 EptsReportUtils.map(
                     this.txRTTCohortQueries.getPLHIVUnknownDesaggregation(), mappings)),
@@ -396,7 +397,7 @@ public class TxRttDataset extends BaseDataSet {
         "PLHIVTOTAL",
         "PLHIV Total",
         EptsReportUtils.map(
-            eptsGeneralIndicator.getIndicator(
+            this.eptsGeneralIndicator.getIndicator(
                 "Patients PLHIV - All",
                 EptsReportUtils.map(this.txRTTCohortQueries.getPLHIVTotal(), mappings)),
             mappings),
@@ -406,7 +407,7 @@ public class TxRttDataset extends BaseDataSet {
   }
 
   private void addAGenderDimensionForUnkwonAgeDimension(
-      CohortIndicatorDataSetDefinition dataSetDefinition) {
+      final CohortIndicatorDataSetDefinition dataSetDefinition) {
     dataSetDefinition.addDimension(
         this.getDimensionNameForUnkwonAge(Gender.MALE, AgeRange.UNKNOWN),
         EptsReportUtils.map(
@@ -434,11 +435,11 @@ public class TxRttDataset extends BaseDataSet {
   private void addDimensions(
       final CohortIndicatorDataSetDefinition cohortIndicatorDataSetDefinition,
       final String mappings,
-      List<String> columnPrefixs,
+      final List<String> columnPrefixs,
       final AgeRange... ranges) {
 
     for (final AgeRange range : ranges) {
-      for (String columnPrefix : columnPrefixs) {
+      for (final String columnPrefix : columnPrefixs) {
 
         cohortIndicatorDataSetDefinition.addDimension(
             this.getColumnName(columnPrefix, range, Gender.MALE),
@@ -460,8 +461,8 @@ public class TxRttDataset extends BaseDataSet {
   private void addColums(
       final CohortIndicatorDataSetDefinition dataSetDefinition,
       final String mappings,
-      String columnPrefix,
-      CohortIndicator cohortIndicator,
+      final String columnPrefix,
+      final CohortIndicator cohortIndicator,
       final AgeRange... rannges) {
 
     for (final AgeRange range : rannges) {
@@ -483,7 +484,8 @@ public class TxRttDataset extends BaseDataSet {
     }
   }
 
-  private String getColumnName(String columnPrefix, AgeRange range, Gender gender) {
+  private String getColumnName(
+      final String columnPrefix, final AgeRange range, final Gender gender) {
     return range.getDesagregationColumnName(columnPrefix, gender);
   }
 }

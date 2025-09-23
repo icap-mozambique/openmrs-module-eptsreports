@@ -44,17 +44,17 @@ public class HivCohortQueries {
    */
   @DocumentedDefinition(value = "suppressedViralLoadWithin12Months")
   public CohortDefinition getPatientsWithSuppressedViralLoadWithin12Months() {
-    SqlCohortDefinition sql = new SqlCohortDefinition();
+    final SqlCohortDefinition sql = new SqlCohortDefinition();
     sql.setName("suppressedViralLoadWithin12Months");
     sql.addParameter(new Parameter("startDate", "Start Date", Date.class));
     sql.addParameter(new Parameter("endDate", "End Date", Date.class));
     sql.addParameter(new Parameter("location", "Location", Location.class));
     sql.setQuery(
         ViralLoadQueries.getPatientsWithViralLoadSuppression(
-            hivMetadata.getMisauLaboratorioEncounterType().getEncounterTypeId(),
-            hivMetadata.getAdultoSeguimentoEncounterType().getEncounterTypeId(),
-            hivMetadata.getARVPediatriaSeguimentoEncounterType().getEncounterTypeId(),
-            hivMetadata.getHivViralLoadConcept().getConceptId()));
+            this.hivMetadata.getMisauLaboratorioEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getAdultoSeguimentoEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getARVPediatriaSeguimentoEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getHivViralLoadConcept().getConceptId()));
     return sql;
   }
 
@@ -66,17 +66,17 @@ public class HivCohortQueries {
    */
   @DocumentedDefinition(value = "viralLoadWithin12Months")
   public CohortDefinition getPatientsViralLoadWithin12Months() {
-    SqlCohortDefinition sql = new SqlCohortDefinition();
+    final SqlCohortDefinition sql = new SqlCohortDefinition();
     sql.setName("viralLoadWithin12Months");
     sql.addParameter(new Parameter("startDate", "Start Date", Date.class));
     sql.addParameter(new Parameter("endDate", "End Date", Date.class));
     sql.addParameter(new Parameter("location", "Location", Location.class));
     sql.setQuery(
         ViralLoadQueries.getPatientsHavingViralLoadInLast12Months(
-            hivMetadata.getMisauLaboratorioEncounterType().getEncounterTypeId(),
-            hivMetadata.getAdultoSeguimentoEncounterType().getEncounterTypeId(),
-            hivMetadata.getARVPediatriaSeguimentoEncounterType().getEncounterTypeId(),
-            hivMetadata.getHivViralLoadConcept().getConceptId()));
+            this.hivMetadata.getMisauLaboratorioEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getAdultoSeguimentoEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getARVPediatriaSeguimentoEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getHivViralLoadConcept().getConceptId()));
     return sql;
   }
 
@@ -87,9 +87,9 @@ public class HivCohortQueries {
    */
   @DocumentedDefinition(value = "restartedTreatment")
   public CohortDefinition getPatientsWhoRestartedTreatment() {
-    return genericCohortQueires.hasCodedObs(
-        hivMetadata.getARVPlanConcept(),
-        Collections.singletonList(hivMetadata.getRestartConcept()));
+    return this.genericCohortQueires.hasCodedObs(
+        this.hivMetadata.getARVPlanConcept(),
+        Collections.singletonList(this.hivMetadata.getRestartConcept()));
   }
 
   /**
@@ -104,9 +104,9 @@ public class HivCohortQueries {
     // TODO refactor this method, use
     // #getPatientsInProgramWithStateDuringPeriod(Program,
     // ProgramWorkflowState)
-    SqlCohortDefinition transferredFromOtherHealthFacility = new SqlCohortDefinition();
+    final SqlCohortDefinition transferredFromOtherHealthFacility = new SqlCohortDefinition();
     transferredFromOtherHealthFacility.setName("transferredFromOtherHealthFacility");
-    String query =
+    final String query =
         "select p.patient_id from patient p "
             + "inner join patient_program pg on p.patient_id=pg.patient_id "
             + "inner join patient_state ps on pg.patient_program_id=ps.patient_program_id "
@@ -118,8 +118,8 @@ public class HivCohortQueries {
     transferredFromOtherHealthFacility.setQuery(
         String.format(
             query,
-            hivMetadata.getARTProgram().getProgramId(),
-            hivMetadata
+            this.hivMetadata.getARTProgram().getProgramId(),
+            this.hivMetadata
                 .getTransferredFromOtherHealthFacilityWorkflowState()
                 .getProgramWorkflowStateId()));
     transferredFromOtherHealthFacility.addParameter(
@@ -132,10 +132,10 @@ public class HivCohortQueries {
   }
 
   public CohortDefinition getPatientsInArtCareTransferredOutToAnotherHealthFacility() {
-    Program hivCareProgram = hivMetadata.getHIVCareProgram();
-    ProgramWorkflowState state =
-        hivMetadata.getArtCareTransferredOutToAnotherHealthFacilityWorkflowState();
-    return genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
+    final Program hivCareProgram = this.hivMetadata.getHIVCareProgram();
+    final ProgramWorkflowState state =
+        this.hivMetadata.getArtCareTransferredOutToAnotherHealthFacilityWorkflowState();
+    return this.genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
         hivCareProgram.getProgramId(), state.getProgramWorkflowStateId());
   }
 
@@ -147,9 +147,9 @@ public class HivCohortQueries {
    */
   @DocumentedDefinition(value = "patientWithHistoricalDrugStartDateObs")
   public CohortDefinition getPatientWithHistoricalDrugStartDateObsBeforeOrOnEndDate() {
-    SqlCohortDefinition patientWithHistoricalDrugStartDateObs = new SqlCohortDefinition();
+    final SqlCohortDefinition patientWithHistoricalDrugStartDateObs = new SqlCohortDefinition();
     patientWithHistoricalDrugStartDateObs.setName("patientWithHistoricalDrugStartDateObs");
-    String query =
+    final String query =
         "SELECT p.patient_id FROM patient p INNER JOIN encounter e ON p.patient_id=e.patient_id "
             + "INNER JOIN obs o ON e.encounter_id=o.encounter_id "
             + "WHERE p.voided=0 and e.voided=0 AND o.voided=0 AND e.encounter_type IN (%d, %d, %d) "
@@ -158,10 +158,10 @@ public class HivCohortQueries {
     patientWithHistoricalDrugStartDateObs.setQuery(
         String.format(
             query,
-            hivMetadata.getARVPharmaciaEncounterType().getEncounterTypeId(),
-            hivMetadata.getAdultoSeguimentoEncounterType().getEncounterTypeId(),
-            hivMetadata.getARVPediatriaSeguimentoEncounterType().getEncounterTypeId(),
-            hivMetadata.getHistoricalDrugStartDateConcept().getConceptId()));
+            this.hivMetadata.getARVPharmaciaEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getAdultoSeguimentoEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getARVPediatriaSeguimentoEncounterType().getEncounterTypeId(),
+            this.hivMetadata.getHistoricalDrugStartDateConcept().getConceptId()));
     patientWithHistoricalDrugStartDateObs.addParameter(
         new Parameter("onOrBefore", "onOrBefore", Date.class));
     patientWithHistoricalDrugStartDateObs.addParameter(
@@ -170,52 +170,53 @@ public class HivCohortQueries {
   }
 
   public CohortDefinition getPatientsInArtCareWhoAbandoned() {
-    Program hivCareProgram = hivMetadata.getHIVCareProgram();
-    ProgramWorkflowState abandoned = hivMetadata.getArtCareAbandonedWorkflowState();
-    return genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
+    final Program hivCareProgram = this.hivMetadata.getHIVCareProgram();
+    final ProgramWorkflowState abandoned = this.hivMetadata.getArtCareAbandonedWorkflowState();
+    return this.genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
         hivCareProgram.getProgramId(), abandoned.getProgramWorkflowStateId());
   }
 
   public CohortDefinition getPatientsInArtCareWhoDied() {
-    Program hivCareProgram = hivMetadata.getHIVCareProgram();
-    ProgramWorkflowState dead = hivMetadata.getArtCareDeadWorkflowState();
-    return genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
+    final Program hivCareProgram = this.hivMetadata.getHIVCareProgram();
+    final ProgramWorkflowState dead = this.hivMetadata.getArtCareDeadWorkflowState();
+    return this.genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
         hivCareProgram.getProgramId(), dead.getProgramWorkflowStateId());
   }
 
   public CohortDefinition getPatientsInArtCareWhoInitiatedArt() {
-    Program hivCareProgram = hivMetadata.getHIVCareProgram();
-    ProgramWorkflowState initiatedArt = hivMetadata.getArtCareInitiatedWorkflowState();
-    return genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
+    final Program hivCareProgram = this.hivMetadata.getHIVCareProgram();
+    final ProgramWorkflowState initiatedArt = this.hivMetadata.getArtCareInitiatedWorkflowState();
+    return this.genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
         hivCareProgram.getProgramId(), initiatedArt.getProgramWorkflowStateId());
   }
 
   public CohortDefinition getPatientsInArtWhoSuspendedTreatment() {
-    ProgramWorkflowState suspendedTreatment = hivMetadata.getArtSuspendedTreatmentWorkflowState();
-    Program artProgram = hivMetadata.getARTProgram();
-    return genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
+    final ProgramWorkflowState suspendedTreatment =
+        this.hivMetadata.getArtSuspendedTreatmentWorkflowState();
+    final Program artProgram = this.hivMetadata.getARTProgram();
+    return this.genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
         artProgram.getProgramId(), suspendedTreatment.getProgramWorkflowStateId());
   }
 
   public CohortDefinition getPatientsInArtTransferredOutToAnotherHealthFacility() {
-    Program artProgram = hivMetadata.getARTProgram();
-    ProgramWorkflowState state =
-        hivMetadata.getArtTransferredOutToAnotherHealthFacilityWorkflowState();
-    return genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
+    final Program artProgram = this.hivMetadata.getARTProgram();
+    final ProgramWorkflowState state =
+        this.hivMetadata.getArtTransferredOutToAnotherHealthFacilityWorkflowState();
+    return this.genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
         artProgram.getProgramId(), state.getProgramWorkflowStateId());
   }
 
   public CohortDefinition getPatientsInArtWhoDied() {
-    Program artProgram = hivMetadata.getARTProgram();
-    ProgramWorkflowState dead = hivMetadata.getArtDeadWorkflowState();
-    return genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
+    final Program artProgram = this.hivMetadata.getARTProgram();
+    final ProgramWorkflowState dead = this.hivMetadata.getArtDeadWorkflowState();
+    return this.genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
         artProgram.getProgramId(), dead.getProgramWorkflowStateId());
   }
 
   public CohortDefinition getPatientsInArtWhoAbandoned() {
-    Program artProgram = hivMetadata.getARTProgram();
-    ProgramWorkflowState state = hivMetadata.getArtAbandonedWorkflowState();
-    return genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
+    final Program artProgram = this.hivMetadata.getARTProgram();
+    final ProgramWorkflowState state = this.hivMetadata.getArtAbandonedWorkflowState();
+    return this.genericCohortQueires.getPatientsBasedOnPatientStatesBeforeDate(
         artProgram.getProgramId(), state.getProgramWorkflowStateId());
   }
 }

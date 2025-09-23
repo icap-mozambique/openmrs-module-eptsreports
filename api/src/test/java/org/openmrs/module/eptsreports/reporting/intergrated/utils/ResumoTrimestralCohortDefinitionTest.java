@@ -31,81 +31,80 @@ public class ResumoTrimestralCohortDefinitionTest extends DefinitionsFGHLiveTest
 
     final Location location = Context.getLocationService().getLocation(221);
 
-    ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorA =
+    final ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorA =
         Context.getRegisteredComponents(ResumoTrimestralIndicatorFactoryA.class)
             .get(0)
             .getResumoTrimestralCalculator(Month.OCTOBER);
 
-    ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorB =
+    final ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorB =
         Context.getRegisteredComponents(ResumoTrimestralIndicatorFactoryB.class)
             .get(0)
             .getResumoTrimestralCalculator(Month.OCTOBER);
 
-    ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorC =
+    final ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorC =
         Context.getRegisteredComponents(ResumoTrimestralIndicatorFactoryC.class)
             .get(0)
             .getResumoTrimestralCalculator(Month.OCTOBER);
 
-    ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorE =
+    final ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorE =
         Context.getRegisteredComponents(ResumoTrimestralIndicatorFactoryE.class)
             .get(0)
             .getResumoTrimestralCalculator(Month.OCTOBER);
 
-    ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorI =
+    final ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorI =
         Context.getRegisteredComponents(ResumoTrimestralIndicatorFactoryI.class)
             .get(0)
             .getResumoTrimestralCalculator(Month.OCTOBER);
-    ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorJ =
+    final ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorJ =
         Context.getRegisteredComponents(ResumoTrimestralIndicatorFactoryJ.class)
             .get(0)
             .getResumoTrimestralCalculator(Month.OCTOBER);
-    ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorL =
+    final ResumoTrimestralMonthPeriodCalculation resumoTrimestralCalculatorL =
         Context.getRegisteredComponents(ResumoTrimestralIndicatorFactoryL.class)
             .get(0)
             .getResumoTrimestralCalculator(Month.OCTOBER);
 
-    CohortDefinition cohortDefinitionA =
-        resumoTrimestralCohortQueries.getPatientsForMonthlyCohort(
+    final CohortDefinition cohortDefinitionA =
+        this.resumoTrimestralCohortQueries.getPatientsForMonthlyCohort(
             Month.OCTOBER, resumoTrimestralCalculatorA);
-    CohortDefinition cohortDefinitionB =
-        resumoTrimestralCohortQueries.getPatientsForMonthlyCohort(
+    final CohortDefinition cohortDefinitionB =
+        this.resumoTrimestralCohortQueries.getPatientsForMonthlyCohort(
             Month.OCTOBER, resumoTrimestralCalculatorB);
-    CohortDefinition cohortDefinitionC =
-        resumoTrimestralCohortQueries.getPatientsForMonthlyCohort(
+    final CohortDefinition cohortDefinitionC =
+        this.resumoTrimestralCohortQueries.getPatientsForMonthlyCohort(
             Month.OCTOBER, resumoTrimestralCalculatorC);
 
-    CohortDefinition definitionForSectionD =
-        resumoTrimestralCohortQueries.getPatientsForCurrentCohort(
+    final CohortDefinition definitionForSectionD =
+        this.resumoTrimestralCohortQueries.getPatientsForCurrentCohort(
             Month.OCTOBER, cohortDefinitionA, cohortDefinitionB, cohortDefinitionC);
 
-    CohortDefinition definitionForSectionL =
-        resumoTrimestralCohortQueries.getPatientsWhoWereRegisteredAsDead(
+    final CohortDefinition definitionForSectionL =
+        this.resumoTrimestralCohortQueries.getPatientsWhoWereRegisteredAsDead(
             Month.OCTOBER, resumoTrimestralCalculatorL, definitionForSectionD);
 
-    CohortDefinition definitionForSectionI =
-        resumoTrimestralCohortQueries.findPatientsWhoHaveSuspendedTreatment(
+    final CohortDefinition definitionForSectionI =
+        this.resumoTrimestralCohortQueries.findPatientsWhoHaveSuspendedTreatment(
             Month.OCTOBER,
             resumoTrimestralCalculatorE,
             resumoTrimestralCalculatorI,
             definitionForSectionD,
             definitionForSectionL);
 
-    CohortDefinition definitionForSectionJ =
-        resumoTrimestralCohortQueries.getPatientsWhoAbandonedArtTreatment(
+    final CohortDefinition definitionForSectionJ =
+        this.resumoTrimestralCohortQueries.getPatientsWhoAbandonedArtTreatment(
             Month.OCTOBER,
             resumoTrimestralCalculatorJ,
             definitionForSectionD,
             definitionForSectionI,
             definitionForSectionL);
 
-    CohortDefinition definitionForSectionE =
-        resumoTrimestralCohortQueries.getPatientsWhoStillInFirstTerapeuticLine(
-            Month.OCTOBER,
-            resumoTrimestralCalculatorE,
-            definitionForSectionD,
-            definitionForSectionI,
-            definitionForSectionJ,
-            definitionForSectionL);
+    this.resumoTrimestralCohortQueries.getPatientsWhoStillInFirstTerapeuticLine(
+        Month.OCTOBER,
+        resumoTrimestralCalculatorE,
+        definitionForSectionD,
+        definitionForSectionI,
+        definitionForSectionJ,
+        definitionForSectionL);
 
     final Map<Parameter, Object> parameters = new HashMap<>();
     parameters.put(new Parameter("year", "Year", String.class), 2019 + "");
@@ -117,7 +116,7 @@ public class ResumoTrimestralCohortDefinitionTest extends DefinitionsFGHLiveTest
 
     System.out.println(evaluateResults.getMemberIds().size());
 
-    for (Integer pId : evaluateResults.getMemberIds()) {
+    for (final Integer pId : evaluateResults.getMemberIds()) {
 
       System.out.println(pId);
     }

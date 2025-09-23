@@ -1,7 +1,6 @@
 package org.openmrs.module.eptsreports.reporting.calculation.quarterly.query;
 
 import java.util.List;
-import org.openmrs.Location;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.eptsreports.reporting.calculation.quarterly.MonthlyDateRange;
 import org.openmrs.module.eptsreports.reporting.library.queries.BaseQueries;
@@ -18,7 +17,7 @@ public class ResumoTrimestralQueries {
     qb.append(IResumoTrimestralQueries.QUERY.findPatientsWhoAreNewlyEnrolledOnART);
     qb.addParameter("startDate", monthlyDateRange.getStartDate());
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -33,7 +32,7 @@ public class ResumoTrimestralQueries {
             .findPatientsWhoWhereMarkedAsTransferreInByMinTransferredDate);
     qb.addParameter("startDate", monthlyDateRange.getStartDate());
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -49,7 +48,7 @@ public class ResumoTrimestralQueries {
             .findPatientesWhoreMarkedAsTransferredOutInArtProgramOrInFichaClinicaOrInFichaResumo);
     qb.addParameter("startDate", monthlyDateRange.getStartDate());
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -62,7 +61,7 @@ public class ResumoTrimestralQueries {
     qb.append(IResumoTrimestralQueries.QUERY.findPatientsWhoWereSuspendTreatment);
     qb.addParameter("startDate", monthlyDateRange.getStartDate());
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -75,7 +74,7 @@ public class ResumoTrimestralQueries {
     qb.append(IResumoTrimestralQueries.QUERY.findPatientsWhoDiedDuringTreatment);
     qb.addParameter("startDate", monthlyDateRange.getStartDate());
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -87,7 +86,7 @@ public class ResumoTrimestralQueries {
     SqlQueryBuilder qb = new SqlQueryBuilder();
     qb.append(IResumoTrimestralQueries.QUERY.findPatientsWhoAbandonedArtTreatment);
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -99,7 +98,7 @@ public class ResumoTrimestralQueries {
     SqlQueryBuilder qb = new SqlQueryBuilder();
     qb.append(IResumoTrimestralQueries.QUERY.getPatientsWhoStillInFirstLine);
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -111,7 +110,7 @@ public class ResumoTrimestralQueries {
     SqlQueryBuilder qb = new SqlQueryBuilder();
     qb.append(IResumoTrimestralQueries.QUERY.findPatientsWhoAreInSecondLine);
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -123,7 +122,7 @@ public class ResumoTrimestralQueries {
     SqlQueryBuilder qb = new SqlQueryBuilder();
     qb.append(IResumoTrimestralQueries.QUERY.findPatientsWithRegisteredViralLoad);
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)
@@ -135,7 +134,7 @@ public class ResumoTrimestralQueries {
     SqlQueryBuilder qb = new SqlQueryBuilder();
     qb.append(BaseQueries.getBaseCohortQuery());
     qb.addParameter("endDate", monthlyDateRange.getEndDate());
-    qb.addParameter("location", (Location) context.getParameterValue("location"));
+    qb.addParameter("location", context.getParameterValue("location"));
 
     return Context.getRegisteredComponents(EvaluationService.class)
         .get(0)

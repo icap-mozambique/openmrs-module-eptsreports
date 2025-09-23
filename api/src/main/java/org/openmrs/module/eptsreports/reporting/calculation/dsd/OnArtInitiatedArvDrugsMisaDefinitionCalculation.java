@@ -17,24 +17,24 @@ public class OnArtInitiatedArvDrugsMisaDefinitionCalculation extends BaseFghCalc
 
   @Override
   public CalculationResultMap evaluate(
-      Map<String, Object> parameterValues, EvaluationContext context) {
+      final Map<String, Object> parameterValues, final EvaluationContext context) {
 
-    CalculationResultMap resultMap = new CalculationResultMap();
+    final CalculationResultMap resultMap = new CalculationResultMap();
 
-    Map<Integer, ? extends Object> processorResult =
+    final Map<Integer, ? extends Object> processorResult =
         Context.getRegisteredComponents(OnArtInitiatedArvDrugsMISAUDefinitionProcessor.class)
             .get(0)
             .getResutls(context);
 
-    for (Integer pId : processorResult.keySet()) {
-      Object dateObject = processorResult.get(pId);
+    for (final Integer pId : processorResult.keySet()) {
+      final Object dateObject = processorResult.get(pId);
       Date date = null;
 
       if (dateObject instanceof Date) {
         date = (Date) dateObject;
       } else if (dateObject instanceof LocalDateTime) {
         // Convert LocalDateTime to Date
-        LocalDateTime localDateTime = (LocalDateTime) dateObject;
+        final LocalDateTime localDateTime = (LocalDateTime) dateObject;
         date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
       }
 
@@ -47,7 +47,9 @@ public class OnArtInitiatedArvDrugsMisaDefinitionCalculation extends BaseFghCalc
 
   @Override
   public CalculationResultMap evaluate(
-      Collection<Integer> cohort, Map<String, Object> parameterValues, EvaluationContext context) {
+      final Collection<Integer> cohort,
+      final Map<String, Object> parameterValues,
+      final EvaluationContext context) {
     return this.evaluate(parameterValues, context);
   }
 }

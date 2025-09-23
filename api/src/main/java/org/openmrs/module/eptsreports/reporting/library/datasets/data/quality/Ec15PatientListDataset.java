@@ -28,8 +28,8 @@ public class Ec15PatientListDataset extends BaseDataSet {
    * @param parameterList
    * @return
    */
-  public DataSetDefinition ec15PatientListDataset(List<Parameter> parameterList) {
-    SqlDataSetDefinition dsd = new SqlDataSetDefinition();
+  public DataSetDefinition ec15PatientListDataset(final List<Parameter> parameterList) {
+    final SqlDataSetDefinition dsd = new SqlDataSetDefinition();
     dsd.setName("EC15");
     dsd.addParameters(parameterList);
     dsd.setSqlQuery(Ec15Queries.getEc15CombinedQuery());
