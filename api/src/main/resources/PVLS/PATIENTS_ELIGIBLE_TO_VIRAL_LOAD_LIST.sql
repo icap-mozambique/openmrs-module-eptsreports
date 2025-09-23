@@ -442,7 +442,7 @@
                                  inner join encounter e on p.patient_id=e.patient_id 
                                  inner join obs o on o.encounter_id=e.encounter_id 
                                where p.voided = 0 and e.voided=0 and o.voided=0 
-                                 and e.encounter_type = 6 and e.encounter_datetime<=:endDateand e.location_id=:location  
+                                 and e.encounter_type = 6 and e.encounter_datetime<=:endDate and e.location_id=:location  
                                  group by p.patient_id 
                            ) ultimo_mdc 
                              inner join encounter e on ultimo_mdc.patient_id=e.patient_id 
@@ -487,7 +487,7 @@
                                  inner join encounter e on p.patient_id=e.patient_id 
                                  inner join obs o on o.encounter_id=e.encounter_id 
                                where p.voided = 0 and e.voided=0 and o.voided=0 
-                                 and e.encounter_type = 6 and e.encounter_datetime<=:endDateand e.location_id=:location  
+                                 and e.encounter_type = 6 and e.encounter_datetime<=:endDate and e.location_id=:location  
                                  group by p.patient_id 
                            ) ultimo_mdc 
                              inner join encounter e on ultimo_mdc.patient_id=e.patient_id 
