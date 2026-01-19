@@ -81,11 +81,12 @@ public class TxCurrDataset extends BaseDataSet {
             "findPatientsWhoAreActiveOnART",
             EptsReportUtils.map(txCurrCompositionCohort, mappings));
 
-    dataSetDefinition.addDimension("gender", EptsReportUtils.map(eptsCommonDimension.gender(), ""));
+    dataSetDefinition.addDimension(
+        "gender", EptsReportUtils.map(this.eptsCommonDimension.gender(), ""));
     dataSetDefinition.addDimension(
         "age",
         EptsReportUtils.map(
-            eptsCommonDimension.age(ageDimensionCohort), "effectiveDate=${endDate}"));
+            this.eptsCommonDimension.age(this.ageDimensionCohort), "effectiveDate=${endDate}"));
     dataSetDefinition.addDimension(
         "arvdispenseless3months",
         EptsReportUtils.map(
@@ -285,13 +286,14 @@ public class TxCurrDataset extends BaseDataSet {
 
   private void setPatientsOnrArvLess3MonthsColumnsDisagregations(
       final CohortIndicatorDataSetDefinition dataSetDefinition,
-      Mapped<? extends CohortIndicator> indicator) {
+      final Mapped<? extends CohortIndicator> indicator) {
 
-    for (ColumnParameters column : getColumnsForArvDispenseDisagregatioins()) {
-      String name = "C1" + "-" + column.getColumn();
-      String label = "Patients On Arv Dispensation < 3 Months" + " (" + column.getLabel() + ")";
-      String newDimension =
-          (column.getDimensions().length() > 2)
+    for (final ColumnParameters column : this.getColumnsForArvDispenseDisagregatioins()) {
+      final String name = "C1" + "-" + column.getColumn();
+      final String label =
+          "Patients On Arv Dispensation < 3 Months" + " (" + column.getLabel() + ")";
+      final String newDimension =
+          column.getDimensions().length() > 2
               ? column.getDimensions() + "|arvdispenseless3months=arvdispenseless3months"
               : "arvdispenseless3months=arvdispenseless3months";
       dataSetDefinition.addColumn(name, label, indicator, newDimension);
@@ -300,14 +302,14 @@ public class TxCurrDataset extends BaseDataSet {
 
   private void setPatientsOnrArvFor3and5MonthsColumnsDisagregations(
       final CohortIndicatorDataSetDefinition dataSetDefinition,
-      Mapped<? extends CohortIndicator> indicator) {
+      final Mapped<? extends CohortIndicator> indicator) {
 
-    for (ColumnParameters column : getColumnsForArvDispenseDisagregatioins()) {
-      String name = "C2" + "-" + column.getColumn();
-      String label =
+    for (final ColumnParameters column : this.getColumnsForArvDispenseDisagregatioins()) {
+      final String name = "C2" + "-" + column.getColumn();
+      final String label =
           "Patients On Arv Dispensation for 3 and 5 Months" + " (" + column.getLabel() + ")";
-      String newDimension =
-          (column.getDimensions().length() > 2)
+      final String newDimension =
+          column.getDimensions().length() > 2
               ? column.getDimensions() + "|arvdispensefor3and5months=arvdispensefor3and5months"
               : "arvdispensefor3and5months=arvdispensefor3and5months";
       dataSetDefinition.addColumn(name, label, indicator, newDimension);
@@ -316,14 +318,14 @@ public class TxCurrDataset extends BaseDataSet {
 
   private void setPatientsOnrArvFor6OrMoreMonthsColumnsDisagregations(
       final CohortIndicatorDataSetDefinition dataSetDefinition,
-      Mapped<? extends CohortIndicator> indicator) {
+      final Mapped<? extends CohortIndicator> indicator) {
 
-    for (ColumnParameters column : getColumnsForArvDispenseDisagregatioins()) {
-      String name = "C3" + "-" + column.getColumn();
-      String label =
+    for (final ColumnParameters column : this.getColumnsForArvDispenseDisagregatioins()) {
+      final String name = "C3" + "-" + column.getColumn();
+      final String label =
           "Patients On Arv Dispensation for 6 or More Months" + " (" + column.getLabel() + ")";
-      String newDimension =
-          (column.getDimensions().length() > 2)
+      final String newDimension =
+          column.getDimensions().length() > 2
               ? column.getDimensions()
                   + "|arvdispensefor6andmoremonths=arvdispensefor6andmoremonths"
               : "arvdispensefor6andmoremonths=arvdispensefor6andmoremonths";
@@ -333,21 +335,21 @@ public class TxCurrDataset extends BaseDataSet {
 
   private List<ColumnParameters> getColumnsForArvDispenseDisagregatioins() {
 
-    ColumnParameters under15M =
+    final ColumnParameters under15M =
         new ColumnParameters("under15M", "under 15 year male", "gender=M|age=<15", "01");
-    ColumnParameters above15M =
+    final ColumnParameters above15M =
         new ColumnParameters("above15M", "above 15 year male", "gender=M|age=15+", "02");
-    ColumnParameters unknownM =
+    final ColumnParameters unknownM =
         new ColumnParameters("unknownM", "Unknown age male", "gender=M|age=UK", "03");
 
-    ColumnParameters under15F =
+    final ColumnParameters under15F =
         new ColumnParameters("under15F", "under 15 year female", "gender=F|age=<15", "04");
-    ColumnParameters above15F =
+    final ColumnParameters above15F =
         new ColumnParameters("above15F", "above 15 year female", "gender=F|age=15+", "05");
-    ColumnParameters unknownF =
+    final ColumnParameters unknownF =
         new ColumnParameters("unknownF", "Unknown age female", "gender=F|age=UK", "06");
 
-    ColumnParameters total = new ColumnParameters("totals", "Totals", "", "07");
+    final ColumnParameters total = new ColumnParameters("totals", "Totals", "", "07");
 
     return Arrays.asList(under15M, above15M, unknownM, under15F, above15F, unknownF, total);
   }

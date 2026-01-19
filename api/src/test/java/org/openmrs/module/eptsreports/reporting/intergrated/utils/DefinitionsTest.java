@@ -24,20 +24,23 @@ import org.openmrs.test.BaseModuleContextSensitiveTest;
 
 public abstract class DefinitionsTest extends BaseModuleContextSensitiveTest {
 
-  protected void addParameters(CohortDefinition cd) {
+  protected void addParameters(final CohortDefinition cd) {
     cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
     cd.addParameter(new Parameter("endDate", "End Date", Date.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
   }
 
-  protected void addParameters(DataSetDefinition cd) {
+  protected void addParameters(final DataSetDefinition cd) {
     cd.addParameter(new Parameter("startDate", "Start Date", Date.class));
     cd.addParameter(new Parameter("endDate", "End Date", Date.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
   }
 
   protected void setParameters(
-      Date startDate, Date endDate, Location location, EvaluationContext context) {
+      final Date startDate,
+      final Date endDate,
+      final Location location,
+      final EvaluationContext context) {
     context.addParameterValue("startDate", startDate);
     context.addParameterValue("endDate", endDate);
     context.addParameterValue("location", location);
@@ -55,90 +58,96 @@ public abstract class DefinitionsTest extends BaseModuleContextSensitiveTest {
     return Context.getLocationService().getLocation(1);
   }
 
-  protected DataSet evaluateDatasetDefinition(DataSetDefinition cd, Cohort baseCohort)
+  protected DataSet evaluateDatasetDefinition(final DataSetDefinition cd, final Cohort baseCohort)
       throws EvaluationException {
-    EvaluationContext context = new EvaluationContext();
-    context.addParameterValue("startDate", getStartDate());
-    context.addParameterValue("endDate", getEndDate());
-    context.addParameterValue("location", getLocation());
+    final EvaluationContext context = new EvaluationContext();
+    context.addParameterValue("startDate", this.getStartDate());
+    context.addParameterValue("endDate", this.getEndDate());
+    context.addParameterValue("location", this.getLocation());
     context.setBaseCohort(baseCohort);
-    addParameters(cd);
+    this.addParameters(cd);
     return Context.getService(DataSetDefinitionService.class).evaluate(cd, context);
   }
 
-  protected DataSet evaluateDatasetDefinition(DataSetDefinition cd) throws EvaluationException {
-    EvaluationContext context = new EvaluationContext();
-    context.addParameterValue("startDate", getStartDate());
-    context.addParameterValue("endDate", getEndDate());
-    context.addParameterValue("location", getLocation());
-    addParameters(cd);
+  protected DataSet evaluateDatasetDefinition(final DataSetDefinition cd)
+      throws EvaluationException {
+    final EvaluationContext context = new EvaluationContext();
+    context.addParameterValue("startDate", this.getStartDate());
+    context.addParameterValue("endDate", this.getEndDate());
+    context.addParameterValue("location", this.getLocation());
+    this.addParameters(cd);
     return Context.getService(DataSetDefinitionService.class).evaluate(cd, context);
   }
 
   protected DataSet evaluateDatasetDefinition(
-      DataSetDefinition cd, Map<Parameter, Object> parameters) throws EvaluationException {
-    EvaluationContext context = getEvaluationContext(cd, parameters);
+      final DataSetDefinition cd, final Map<Parameter, Object> parameters)
+      throws EvaluationException {
+    final EvaluationContext context = this.getEvaluationContext(cd, parameters);
+
     return Context.getService(DataSetDefinitionService.class).evaluate(cd, context);
   }
 
-  protected EvaluatedCohort evaluateCodedObsCohortDefinition(CohortDefinition cd)
+  protected EvaluatedCohort evaluateCodedObsCohortDefinition(final CohortDefinition cd)
       throws EvaluationException {
-    addParameters(cd);
-    EvaluationContext context = new EvaluationContext();
-    context.addParameterValue("onOrAfter", getStartDate());
-    context.addParameterValue("onOrBefore", getEndDate());
-    context.addParameterValue("locationList", getLocation());
+    this.addParameters(cd);
+    final EvaluationContext context = new EvaluationContext();
+    context.addParameterValue("onOrAfter", this.getStartDate());
+    context.addParameterValue("onOrBefore", this.getEndDate());
+    context.addParameterValue("locationList", this.getLocation());
     return Context.getService(CohortDefinitionService.class).evaluate(cd, context);
   }
 
-  protected EvaluatedCohort evaluateCalculationCohortDefinition(CohortDefinition cd)
+  protected EvaluatedCohort evaluateCalculationCohortDefinition(final CohortDefinition cd)
       throws EvaluationException {
-    addParameters(cd);
-    EvaluationContext context = new EvaluationContext();
+    this.addParameters(cd);
+    final EvaluationContext context = new EvaluationContext();
     context.addParameterValue("onOrAfter", DateUtil.getDateTime(2019, 2, 6));
-    context.addParameterValue("onOrBefore", getEndDate());
-    context.addParameterValue("location", getLocation());
+    context.addParameterValue("onOrBefore", this.getEndDate());
+    context.addParameterValue("location", this.getLocation());
     return Context.getService(CohortDefinitionService.class).evaluate(cd, context);
   }
 
-  protected EvaluatedCohort evaluateCohortDefinition(CohortDefinition cd)
+  protected EvaluatedCohort evaluateCohortDefinition(final CohortDefinition cd)
       throws EvaluationException {
-    addParameters(cd);
-    EvaluationContext context = new EvaluationContext();
+    this.addParameters(cd);
+    final EvaluationContext context = new EvaluationContext();
 
-    setParameters(getStartDate(), getEndDate(), getLocation(), context);
+    this.setParameters(this.getStartDate(), this.getEndDate(), this.getLocation(), context);
     return Context.getService(CohortDefinitionService.class).evaluate(cd, context);
   }
 
   protected EvaluatedCohort evaluateCohortDefinition(
-      CohortDefinition cd, Date startDate, Date endDate, Location location)
+      final CohortDefinition cd, final Date startDate, final Date endDate, final Location location)
       throws EvaluationException {
-    addParameters(cd);
-    EvaluationContext context = new EvaluationContext();
+    this.addParameters(cd);
+    final EvaluationContext context = new EvaluationContext();
 
-    setParameters(startDate, endDate, location, context);
+    this.setParameters(startDate, endDate, location, context);
     return Context.getService(CohortDefinitionService.class).evaluate(cd, context);
   }
 
   protected EvaluatedCohort evaluateCohortDefinition(
-      CohortDefinition cd, Map<Parameter, Object> parameters) throws EvaluationException {
-    EvaluationContext context = getEvaluationContext(cd, parameters);
+      final CohortDefinition cd, final Map<Parameter, Object> parameters)
+      throws EvaluationException {
+    final EvaluationContext context = this.getEvaluationContext(cd, parameters);
     return Context.getService(CohortDefinitionService.class).evaluate(cd, context);
   }
 
   protected DataSet evaluateCohortDefinition(
-      DataSetDefinition dd, Map<Parameter, Object> parameters) throws EvaluationException {
-    EvaluationContext context = getEvaluationContext(dd, parameters);
+      final DataSetDefinition dd, final Map<Parameter, Object> parameters)
+      throws EvaluationException {
+    final EvaluationContext context = this.getEvaluationContext(dd, parameters);
     return Context.getService(DataSetDefinitionService.class).evaluate(dd, context);
   }
 
-  private EvaluationContext getEvaluationContext(Definition cd, Map<Parameter, Object> parameters) {
-    EvaluationContext context = new EvaluationContext();
+  private EvaluationContext getEvaluationContext(
+      final Definition cd, final Map<Parameter, Object> parameters) {
+    final EvaluationContext context = new EvaluationContext();
     if (parameters != null) {
-      Iterator it = parameters.entrySet().iterator();
+      final Iterator it = parameters.entrySet().iterator();
       while (it.hasNext()) {
-        Map.Entry p = (Map.Entry) it.next();
-        Parameter parameter = (Parameter) p.getKey();
+        final Map.Entry p = (Map.Entry) it.next();
+        final Parameter parameter = (Parameter) p.getKey();
         if (!cd.getParameters().contains(parameter)) {
           cd.addParameter(parameter);
         }
@@ -149,9 +158,11 @@ public abstract class DefinitionsTest extends BaseModuleContextSensitiveTest {
   }
 
   protected CohortDimensionResult evaluateCohortDefinitionDimension(
-      CohortDefinitionDimension cohortDefinitionDimension, Map<Parameter, Object> parameters)
+      final CohortDefinitionDimension cohortDefinitionDimension,
+      final Map<Parameter, Object> parameters)
       throws EvaluationException {
-    EvaluationContext context = getEvaluationContext(cohortDefinitionDimension, parameters);
+    final EvaluationContext context =
+        this.getEvaluationContext(cohortDefinitionDimension, parameters);
     return (CohortDimensionResult)
         Context.getService(DimensionService.class).evaluate(cohortDefinitionDimension, context);
   }

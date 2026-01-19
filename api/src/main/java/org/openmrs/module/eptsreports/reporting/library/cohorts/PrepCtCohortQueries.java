@@ -19,6 +19,7 @@ import org.openmrs.module.eptsreports.reporting.library.queries.PrepCtQueries;
 import org.openmrs.module.eptsreports.reporting.library.queries.PrepReasonInterruptionType;
 import org.openmrs.module.eptsreports.reporting.library.queries.ReasonsOfPrepInterruptionQuery;
 import org.openmrs.module.eptsreports.reporting.utils.EptsReportUtils;
+import org.openmrs.module.eptsreports.reporting.utils.PrepNewKeyPopType;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
@@ -50,7 +51,7 @@ public class PrepCtCohortQueries {
     definition.addParameter(new Parameter("endDate", "End Date", Date.class));
     definition.addParameter(new Parameter("location", "Location", Location.class));
 
-    String query = PrepCtQueries.QUERY.findPrepCTByOralPrepType;
+    final String query = PrepCtQueries.QUERY.findPrepCTByOralPrepType;
     definition.setQuery(query);
 
     return definition;
@@ -65,7 +66,7 @@ public class PrepCtCohortQueries {
     definition.addParameter(new Parameter("endDate", "End Date", Date.class));
     definition.addParameter(new Parameter("location", "Location", Location.class));
 
-    String query = PrepCtQueries.QUERY.findPrepCTByInjectablePrepType;
+    final String query = PrepCtQueries.QUERY.findPrepCTByInjectablePrepType;
     definition.setQuery(query);
 
     return definition;
@@ -80,13 +81,14 @@ public class PrepCtCohortQueries {
     definition.addParameter(new Parameter("endDate", "End Date", Date.class));
     definition.addParameter(new Parameter("location", "Location", Location.class));
 
-    String query = PrepCtQueries.QUERY.findPrepCTByOtherPrepType;
+    final String query = PrepCtQueries.QUERY.findPrepCTByOtherPrepType;
     definition.setQuery(query);
 
     return definition;
   }
 
   public CohortDefinition getClientsNewlyEnrolledInPrep() {
+
     final CompositionCohortDefinition prepCtCompositionCohort = new CompositionCohortDefinition();
 
     prepCtCompositionCohort.setName("PREP CT");
@@ -144,7 +146,7 @@ public class PrepCtCohortQueries {
 
     prepCtCompositionCohort.addSearch(
         "PREP-NEW",
-        EptsReportUtils.map(prepNewCohortQueries.getClientsNewlyEnrolledInPrep(), mappings));
+        EptsReportUtils.map(this.prepNewCohortQueries.getClientsNewlyEnrolledInPrep(), mappings));
 
     prepCtCompositionCohort.setCompositionString(
         "(((START-PREP OR TRANSFERED-IN-BEFORE) AND ATLEAST-ONE-FOLLOWUP) OR TRANSFERED-IN-DURING OR REINITIATED-PREP OR CONTINUE-PREP) NOT PREP-NEW");
@@ -471,6 +473,33 @@ public class PrepCtCohortQueries {
         "PREP-OTHER", EptsReportUtils.map(this.findPrepCTByOtherPrepType(), mappings));
 
     definition.setCompositionString("START-PREP AND PREP-OTHER");
+
+    return definition;
+  }
+
+  // PREP CT ICAP SubPopulação
+  public CohortDefinition getClientsEnrolledInPrepBySubpopulation(final PrepNewKeyPopType keyPop) {
+    final CompositionCohortDefinition definition = new CompositionCohortDefinition();
+
+    definition.setName("PREP CT Subpopulation");
+    definition.addParameter(new Parameter("startDate", "Start Date", Date.class));
+    definition.addParameter(new Parameter("endDate", "End Date", Date.class));
+    definition.addParameter(new Parameter("location", "location", Location.class));
+
+    final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
+
+    definition.addSearch(
+        "ENROLLED-IN-PREP", EptsReportUtils.map(this.getClientsNewlyEnrolledInPrep(), mappings));
+
+    definition.addSearch(
+        "SECTOR",
+        EptsReportUtils.map(
+            this.genericCohorts.generalSql(
+                "findPrEPNewBySector",
+                PrepCtQueries.QUERY.findClientsNewlyEnrolledInPrepBySubpopulation(keyPop)),
+            mappings));
+
+    definition.setCompositionString("ENROLLED-IN-PREP AND SECTOR");
 
     return definition;
   }

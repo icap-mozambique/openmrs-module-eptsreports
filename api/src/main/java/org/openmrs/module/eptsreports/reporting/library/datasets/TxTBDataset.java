@@ -41,32 +41,34 @@ public class TxTBDataset extends BaseDataSet {
   private AgeDimensionCohortInterface ageDimensionCohort;
 
   public DataSetDefinition constructTxTBDataset() {
-    String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
-    CohortIndicatorDataSetDefinition dataSetDefinition = new CohortIndicatorDataSetDefinition();
+    final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
+    final CohortIndicatorDataSetDefinition dataSetDefinition =
+        new CohortIndicatorDataSetDefinition();
     dataSetDefinition.setName("TX_TB Data Set");
-    dataSetDefinition.addParameters(getParameters());
+    dataSetDefinition.addParameters(this.getParameters());
 
-    dataSetDefinition.addDimension("gender", EptsReportUtils.map(eptsCommonDimension.gender(), ""));
+    dataSetDefinition.addDimension(
+        "gender", EptsReportUtils.map(this.eptsCommonDimension.gender(), ""));
     dataSetDefinition.addDimension(
         "age",
         EptsReportUtils.map(
-            eptsCommonDimension.age(ageDimensionCohort), "effectiveDate=${endDate}"));
+            this.eptsCommonDimension.age(this.ageDimensionCohort), "effectiveDate=${endDate}"));
 
-    addTXTBDenominator(mappings, dataSetDefinition);
-    addTXTBNumerator(mappings, dataSetDefinition);
-    addSpecimenSentDisaggregation(mappings, dataSetDefinition);
-    addDiagnositcTestDisaggregation(mappings, dataSetDefinition);
-    addPositiveResultsDisaggregation(mappings, dataSetDefinition);
-    addCXRDisaggregation(mappings, dataSetDefinition);
+    this.addTXTBDenominator(mappings, dataSetDefinition);
+    this.addTXTBNumerator(mappings, dataSetDefinition);
+    this.addSpecimenSentDisaggregation(mappings, dataSetDefinition);
+    this.addDiagnositcTestDisaggregation(mappings, dataSetDefinition);
+    this.addPositiveResultsDisaggregation(mappings, dataSetDefinition);
+    this.addCXRDisaggregation(mappings, dataSetDefinition);
 
     return dataSetDefinition;
   }
 
   private void addCXRDisaggregation(
-      String mappings, CohortIndicatorDataSetDefinition dataSetDefinition) {
-    CohortIndicator specimentSent =
-        eptsGeneralIndicator.getIndicator(
-            "CX", EptsReportUtils.map(txTbCohortQueries.getPatientWhoAreCXR(), mappings));
+      final String mappings, final CohortIndicatorDataSetDefinition dataSetDefinition) {
+    final CohortIndicator specimentSent =
+        this.eptsGeneralIndicator.getIndicator(
+            "CX", EptsReportUtils.map(this.txTbCohortQueries.getPatientWhoAreCXR(), mappings));
 
     dataSetDefinition.addColumn(
         "TX_TB_TOTAL_CXR",
@@ -76,106 +78,109 @@ public class TxTBDataset extends BaseDataSet {
   }
 
   private void addTXTBNumerator(
-      String mappings, CohortIndicatorDataSetDefinition dataSetDefinition) {
-    CohortIndicator numerator =
-        eptsGeneralIndicator.getIndicator(
-            "NUMERATOR", EptsReportUtils.map(txTbCohortQueries.txTbNumerator(), mappings));
+      final String mappings, final CohortIndicatorDataSetDefinition dataSetDefinition) {
+    final CohortIndicator numerator =
+        this.eptsGeneralIndicator.getIndicator(
+            "NUMERATOR", EptsReportUtils.map(this.txTbCohortQueries.txTbNumerator(), mappings));
 
-    CohortIndicator patientsPreviouslyOnARTNumerator =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator patientsPreviouslyOnARTNumerator =
+        this.eptsGeneralIndicator.getIndicator(
             "patientsPreviouslyOnARTNumerator",
-            EptsReportUtils.map(txTbCohortQueries.patientsPreviouslyOnARTNumerator(), mappings));
-    CohortIndicator patientsNewOnARTNumerator =
-        eptsGeneralIndicator.getIndicator(
+            EptsReportUtils.map(
+                this.txTbCohortQueries.patientsPreviouslyOnARTNumerator(), mappings));
+    final CohortIndicator patientsNewOnARTNumerator =
+        this.eptsGeneralIndicator.getIndicator(
             "patientsNewOnARTNumerator",
-            EptsReportUtils.map(txTbCohortQueries.patientsNewOnARTNumerator(), mappings));
+            EptsReportUtils.map(this.txTbCohortQueries.patientsNewOnARTNumerator(), mappings));
 
     dataSetDefinition.addColumn(
         "TXB_NUM",
         "TX_TB: Patients diagnosed with TB and started on TB treatment (Numerator total)",
         EptsReportUtils.map(numerator, mappings),
         "");
-    addRow(
+    this.addRow(
         dataSetDefinition,
         "TXB_NUM_PREV",
         "Numerator (Patients Already on ART)",
         EptsReportUtils.map(patientsPreviouslyOnARTNumerator, mappings),
-        getAdultChildrenColumns());
-    addRow(
+        this.getAdultChildrenColumns());
+    this.addRow(
         dataSetDefinition,
         "TXB_NUM_NEW",
         "Numerator (Patients New on ART)",
         EptsReportUtils.map(patientsNewOnARTNumerator, mappings),
-        getAdultChildrenColumns());
+        this.getAdultChildrenColumns());
   }
 
   private void addTXTBDenominator(
-      String mappings, CohortIndicatorDataSetDefinition dataSetDefinition) {
+      final String mappings, final CohortIndicatorDataSetDefinition dataSetDefinition) {
 
-    CohortIndicator previouslyOnARTPostiveScreening =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator previouslyOnARTPostiveScreening =
+        this.eptsGeneralIndicator.getIndicator(
             "previouslyOnARTPositiveScreening",
-            EptsReportUtils.map(txTbCohortQueries.previouslyOnARTPositiveScreening(), mappings));
+            EptsReportUtils.map(
+                this.txTbCohortQueries.previouslyOnARTPositiveScreening(), mappings));
 
-    CohortIndicator previouslyOnARTNegativeScreening =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator previouslyOnARTNegativeScreening =
+        this.eptsGeneralIndicator.getIndicator(
             "previouslyOnARTNegativeScreening",
-            EptsReportUtils.map(txTbCohortQueries.previouslyOnARTNegativeScreening(), mappings));
+            EptsReportUtils.map(
+                this.txTbCohortQueries.previouslyOnARTNegativeScreening(), mappings));
 
-    CohortIndicator newOnARTPositiveScreening =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator newOnARTPositiveScreening =
+        this.eptsGeneralIndicator.getIndicator(
             "newOnARTPositiveScreening",
-            EptsReportUtils.map(txTbCohortQueries.newOnARTPositiveScreening(), mappings));
+            EptsReportUtils.map(this.txTbCohortQueries.newOnARTPositiveScreening(), mappings));
 
-    CohortIndicator newOnARTNegativeScreening =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator newOnARTNegativeScreening =
+        this.eptsGeneralIndicator.getIndicator(
             "newOnARTNegativeScreening",
-            EptsReportUtils.map(txTbCohortQueries.newOnARTNegativeScreening(), mappings));
+            EptsReportUtils.map(this.txTbCohortQueries.newOnARTNegativeScreening(), mappings));
 
     dataSetDefinition.addColumn(
         "TXB_DEN",
         "TX_TB: Patients on ART screened for TB(Denominator Total)",
         EptsReportUtils.map(
-            eptsGeneralIndicator.getIndicator(
+            this.eptsGeneralIndicator.getIndicator(
                 "Denominator Total",
-                EptsReportUtils.map(txTbCohortQueries.getDenominator(), mappings)),
+                EptsReportUtils.map(this.txTbCohortQueries.getDenominator(), mappings)),
             mappings),
         "");
 
-    addRow(
+    this.addRow(
         dataSetDefinition,
         "TXB_DEN_NEW_POS",
         "Denominator (Patients New on ART Positive Screening)",
         EptsReportUtils.map(newOnARTPositiveScreening, mappings),
-        getAdultChildrenColumns());
-    addRow(
+        this.getAdultChildrenColumns());
+    this.addRow(
         dataSetDefinition,
         "TXB_DEN_NEW_NEG",
         "Denominator (Patients New on ART Negative Screening)",
         EptsReportUtils.map(newOnARTNegativeScreening, mappings),
-        getAdultChildrenColumns());
-    addRow(
+        this.getAdultChildrenColumns());
+    this.addRow(
         dataSetDefinition,
         "TXB_DEN_PREV_POS",
         "Denominator (Patients Already on ART Positive Screening)",
         EptsReportUtils.map(previouslyOnARTPostiveScreening, mappings),
-        getAdultChildrenColumns());
-    addRow(
+        this.getAdultChildrenColumns());
+    this.addRow(
         dataSetDefinition,
         "TXB_DEN_PREV_NEG",
         "Denominator (Patients Already on ART Negative Screening)",
         EptsReportUtils.map(previouslyOnARTNegativeScreening, mappings),
-        getAdultChildrenColumns());
+        this.getAdultChildrenColumns());
   }
 
   private void addSpecimenSentDisaggregation(
-      String mappings, CohortIndicatorDataSetDefinition dataSetDefinition) {
+      final String mappings, final CohortIndicatorDataSetDefinition dataSetDefinition) {
 
-    CohortIndicator specimentSent =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator specimentSent =
+        this.eptsGeneralIndicator.getIndicator(
             "SPECIMEN-SENT",
             EptsReportUtils.map(
-                txTbCohortQueries.getSpecimenSentCohortDefinition(mappings), mappings));
+                this.txTbCohortQueries.getSpecimenSentCohortDefinition(mappings), mappings));
 
     dataSetDefinition.addColumn(
         "TX_TB_TOTAL_SPECIMEN_SENT",
@@ -185,30 +190,30 @@ public class TxTBDataset extends BaseDataSet {
   }
 
   private void addDiagnositcTestDisaggregation(
-      String mappings, CohortIndicatorDataSetDefinition dataSetDefinition) {
+      final String mappings, final CohortIndicatorDataSetDefinition dataSetDefinition) {
 
-    CohortIndicator geneExpert =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator geneExpert =
+        this.eptsGeneralIndicator.getIndicator(
             "GENEXPERT-DIAGNOSTIC-TEST",
             EptsReportUtils.map(
-                txTbCohortQueries.getDiagnosticTestCohortDefinitionMWRS(), mappings));
+                this.txTbCohortQueries.getDiagnosticTestCohortDefinitionMWRS(), mappings));
 
-    CohortIndicator smearOnly =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator smearOnly =
+        this.eptsGeneralIndicator.getIndicator(
             "SMEAR-ONLY-DIAGNOSTIC-TEST",
             EptsReportUtils.map(
-                txTbCohortQueries.getDiagnosticTestSmearMicroscopyOnly(), mappings));
+                this.txTbCohortQueries.getDiagnosticTestSmearMicroscopyOnly(), mappings));
 
-    CohortIndicator otherNoExpert =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator otherNoExpert =
+        this.eptsGeneralIndicator.getIndicator(
             "OTHER-NO-EXPERT-DIAGNOSTIC-TEST",
             EptsReportUtils.map(
-                txTbCohortQueries.getDiagnosticTestCohortDefinitionOther(), mappings));
+                this.txTbCohortQueries.getDiagnosticTestCohortDefinitionOther(), mappings));
 
-    CohortIndicator symptomScreenAlone =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator symptomScreenAlone =
+        this.eptsGeneralIndicator.getIndicator(
             "OTHER-NO-EXPERT-DIAGNOSTIC-TEST",
-            EptsReportUtils.map(txTbCohortQueries.getSymptomScreenAlone(), mappings));
+            EptsReportUtils.map(this.txTbCohortQueries.getSymptomScreenAlone(), mappings));
 
     dataSetDefinition.addColumn(
         "TX_TB_TOTAL_GENEXPERT_DIAGNOSTIC",
@@ -234,13 +239,13 @@ public class TxTBDataset extends BaseDataSet {
   }
 
   private void addPositiveResultsDisaggregation(
-      String mappings, CohortIndicatorDataSetDefinition dataSetDefinition) {
+      final String mappings, final CohortIndicatorDataSetDefinition dataSetDefinition) {
 
-    CohortIndicator positiveResults =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator positiveResults =
+        this.eptsGeneralIndicator.getIndicator(
             "POSITIVE-RESULT",
             EptsReportUtils.map(
-                txTbCohortQueries.getDenominatorAndPositiveResults(mappings), mappings));
+                this.txTbCohortQueries.getDenominatorAndPositiveResults(mappings), mappings));
 
     dataSetDefinition.addColumn(
         "TX_TB_TOTAL_POSITIVE_RESULT",
@@ -251,80 +256,80 @@ public class TxTBDataset extends BaseDataSet {
 
   private List<ColumnParameters> getAdultChildrenColumns() {
     // Male
-    ColumnParameters under1M =
+    final ColumnParameters under1M =
         new ColumnParameters("under1M", "under 1 year male", "gender=M|age=<1", "01");
-    ColumnParameters oneTo4M =
+    final ColumnParameters oneTo4M =
         new ColumnParameters("oneTo4M", "1 - 4 years male", "gender=M|age=1-4", "02");
-    ColumnParameters fiveTo9M =
+    final ColumnParameters fiveTo9M =
         new ColumnParameters("fiveTo9M", "5 - 9 years male", "gender=M|age=5-9", "03");
-    ColumnParameters tenTo14M =
+    final ColumnParameters tenTo14M =
         new ColumnParameters("tenTo14M", "10 - 14 male", "gender=M|age=10-14", "04");
-    ColumnParameters fifteenTo19M =
+    final ColumnParameters fifteenTo19M =
         new ColumnParameters("fifteenTo19M", "15 - 19 male", "gender=M|age=15-19", "05");
-    ColumnParameters twentyTo24M =
+    final ColumnParameters twentyTo24M =
         new ColumnParameters("twentyTo24M", "20 - 24 male", "gender=M|age=20-24", "06");
-    ColumnParameters twenty5To29M =
+    final ColumnParameters twenty5To29M =
         new ColumnParameters("twenty4To29M", "25 - 29 male", "gender=M|age=25-29", "07");
-    ColumnParameters thirtyTo34M =
+    final ColumnParameters thirtyTo34M =
         new ColumnParameters("thirtyTo34M", "30 - 34 male", "gender=M|age=30-34", "08");
-    ColumnParameters thirty5To39M =
+    final ColumnParameters thirty5To39M =
         new ColumnParameters("thirty5To39M", "35 - 39 male", "gender=M|age=35-39", "09");
-    ColumnParameters foutyTo44M =
+    final ColumnParameters foutyTo44M =
         new ColumnParameters("foutyTo44M", "40 - 44 male", "gender=M|age=40-44", "10");
-    ColumnParameters fouty5To49M =
+    final ColumnParameters fouty5To49M =
         new ColumnParameters("fouty5To49M", "45 - 49 male", "gender=M|age=45-49", "11");
 
-    ColumnParameters fiftyT054 =
+    final ColumnParameters fiftyT054 =
         new ColumnParameters("fiftyT054", "50 - 54 male", "gender=M|age=50-54", "12");
 
-    ColumnParameters fiftyfiveT059 =
+    final ColumnParameters fiftyfiveT059 =
         new ColumnParameters("fouty5To49M", "55 - 59 male", "gender=M|age=55-59", "13");
 
-    ColumnParameters sixtyT064 =
+    final ColumnParameters sixtyT064 =
         new ColumnParameters("fiftyfiveT059", "60 - 64 male", "gender=M|age=60-64", "14");
 
-    ColumnParameters above65 =
+    final ColumnParameters above65 =
         new ColumnParameters("above65", "65+  male", "gender=M|age=65+", "15");
-    ColumnParameters unknownM =
+    final ColumnParameters unknownM =
         new ColumnParameters("unknownM", "Unknown age male", "gender=M|age=UK", "16");
 
     // Female
-    ColumnParameters under1F =
+    final ColumnParameters under1F =
         new ColumnParameters("under1F", "under 1 year female", "gender=F|age=<1", "17");
-    ColumnParameters oneTo4F =
+    final ColumnParameters oneTo4F =
         new ColumnParameters("oneTo4F", "1 - 4 years female", "gender=F|age=1-4", "18");
-    ColumnParameters fiveTo9F =
+    final ColumnParameters fiveTo9F =
         new ColumnParameters("fiveTo9F", "5 - 9 years female", "gender=F|age=5-9", "19");
-    ColumnParameters tenTo14F =
+    final ColumnParameters tenTo14F =
         new ColumnParameters("tenTo14F", "10 - 14 female", "gender=F|age=10-14", "20");
-    ColumnParameters fifteenTo19F =
+    final ColumnParameters fifteenTo19F =
         new ColumnParameters("fifteenTo19F", "15 - 19 female", "gender=F|age=15-19", "21");
-    ColumnParameters twentyTo24F =
+    final ColumnParameters twentyTo24F =
         new ColumnParameters("twentyTo24F", "20 - 24 female", "gender=F|age=20-24", "22");
-    ColumnParameters twenty5To29F =
+    final ColumnParameters twenty5To29F =
         new ColumnParameters("twenty4To29F", "25 - 29 female", "gender=F|age=25-29", "23");
-    ColumnParameters thirtyTo34F =
+    final ColumnParameters thirtyTo34F =
         new ColumnParameters("thirtyTo34F", "30 - 34 female", "gender=F|age=30-34", "24");
-    ColumnParameters thirty5To39F =
+    final ColumnParameters thirty5To39F =
         new ColumnParameters("thirty5To39F", "35 - 39 female", "gender=F|age=35-39", "25");
-    ColumnParameters foutyTo44F =
+    final ColumnParameters foutyTo44F =
         new ColumnParameters("foutyTo44F", "40 - 44 female", "gender=F|age=40-44", "26");
-    ColumnParameters fouty5To49F =
+    final ColumnParameters fouty5To49F =
         new ColumnParameters("fouty5To49F", "45 - 49 female", "gender=F|age=45-49", "27");
 
-    ColumnParameters fiftyT054F =
+    final ColumnParameters fiftyT054F =
         new ColumnParameters("fiftyT054F", "50 - 54 female", "gender=F|age=50-54", "28");
 
-    ColumnParameters fiftyfiveT059F =
+    final ColumnParameters fiftyfiveT059F =
         new ColumnParameters("fiftyfiveT059F", "55 - 59 female", "gender=F|age=55-59", "29");
 
-    ColumnParameters sixtyT064F =
+    final ColumnParameters sixtyT064F =
         new ColumnParameters("sixtyT064F", "60 - 64 female", "gender=F|age=60-64", "30");
 
-    ColumnParameters above65F =
+    final ColumnParameters above65F =
         new ColumnParameters("above65", "65+ female", "gender=F|age=65+", "31");
 
-    ColumnParameters unknownF =
+    final ColumnParameters unknownF =
         new ColumnParameters("unknownF", "Unknown age female", "gender=F|age=UK", "32");
 
     return Arrays.asList(

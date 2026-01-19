@@ -1377,6 +1377,23 @@ public class DSDCohortQueries {
     return dataSetDefinitio;
   }
 
+  @DocumentedDefinition(value = "DSD- Indicator excluding pregnants And breastfeedding")
+  public CohortDefinition getDSDDenominatorExcluding(CohortDefinition denominator) {
+    final CompositionCohortDefinition dataSetDefinitio = new CompositionCohortDefinition();
+
+    dataSetDefinitio.setName("DSD- Indicator  Exclunding pregnant and BreastFeeding");
+    dataSetDefinitio.addParameter(new Parameter("startDate", "Start Date", Date.class));
+    dataSetDefinitio.addParameter(new Parameter("endDate", "End Date", Date.class));
+    dataSetDefinitio.addParameter(new Parameter("location", "location", Location.class));
+    final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
+
+    dataSetDefinitio.addSearch("DENOMINATOR", EptsReportUtils.map(denominator, mappings));
+
+    dataSetDefinitio.setCompositionString("DENOMINATOR");
+
+    return dataSetDefinitio;
+  }
+
   @DocumentedDefinition(value = "DSDPatientsWhoExperiencedIITCalculation")
   private CohortDefinition getPatientsWhoExperiencedIITCalculation() {
     BaseFghCalculationCohortDefinition definition =
@@ -1444,6 +1461,39 @@ public class DSDCohortQueries {
                 DSDQueriesInterface.QUERY.findPatientsWhoArePregnantsAndBreastFeeding(
                     TypePTV.BREASTFEEDING)),
             "endDate=${endDate},location=${location}"));
+
+    dataSetDefinitio.setCompositionString("PREGNANT OR BREASTFEEDING");
+
+    return dataSetDefinitio;
+  }
+
+  @DocumentedDefinition(value = "DSD- Pregnants And Breastfeeding")
+  private CohortDefinition getPregnantsAndBreastFeedingFACT() {
+    final CompositionCohortDefinition dataSetDefinitio = new CompositionCohortDefinition();
+
+    dataSetDefinitio.setName("DSD- Pregnant and Breastfeeding");
+    dataSetDefinitio.addParameter(new Parameter("startDate", "Start Date", Date.class));
+    dataSetDefinitio.addParameter(new Parameter("endDate", "End Date", Date.class));
+    dataSetDefinitio.addParameter(new Parameter("location", "location", Location.class));
+    final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
+
+    dataSetDefinitio.addSearch(
+        "PREGNANT",
+        EptsReportUtils.map(
+            this.genericCohorts.generalSql(
+                "patientsWhoArePregnantInAPeriod",
+                DSDQueriesInterface.QUERY.findPatientsWhoArePregnantsAndBreastFeeding(
+                    TypePTV.PREGNANT)),
+            mappings));
+
+    dataSetDefinitio.addSearch(
+        "BREASTFEEDING",
+        EptsReportUtils.map(
+            this.genericCohorts.generalSql(
+                "patientsWhoAreBreastfeeding",
+                DSDQueriesInterface.QUERY.findPatientsWhoArePregnantsAndBreastFeeding(
+                    TypePTV.BREASTFEEDING)),
+            mappings));
 
     dataSetDefinitio.setCompositionString("PREGNANT OR BREASTFEEDING");
 

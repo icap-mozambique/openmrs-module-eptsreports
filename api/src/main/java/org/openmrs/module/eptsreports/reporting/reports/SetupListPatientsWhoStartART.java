@@ -108,6 +108,7 @@ public class SetupListPatientsWhoStartART extends EptsDataExportManager {
     return Arrays.asList(reportDesign);
   }
 
+  @Override
   public List<Parameter> getParameters() {
     return Arrays.asList(
         new Parameter("startDate", "Cohort Start Date", Date.class),

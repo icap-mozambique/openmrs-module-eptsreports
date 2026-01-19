@@ -19,5 +19,6 @@ import org.openmrs.module.reporting.report.definition.PeriodIndicatorReportDefin
 /** Base implementation of ReportManager that implements a period Indicator Construction */
 public abstract class EptsPeriodIndicatorReportManager extends EptsReportManager {
 
+  @Override
   public abstract PeriodIndicatorReportDefinition constructReportDefinition();
 }

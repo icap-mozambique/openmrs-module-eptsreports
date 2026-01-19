@@ -31,16 +31,16 @@ import org.springframework.stereotype.Component;
 public class ResumoTrimestralCohortQueries {
 
   public CohortDefinition getPatientsForMonthlyCohort(
-      Month month, ResumoTrimestralMonthPeriodCalculation calculator) {
+      final Month month, final ResumoTrimestralMonthPeriodCalculation calculator) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
 
     cd.setName("A - Get patients who have initiated ART Treatment on month " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
     cd.addSearch(
         "patientsWhoHaveInitiatedArtTreatment",
         EptsReportUtils.map(
@@ -51,18 +51,18 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition getPatientsForCurrentCohort(
-      Month month,
-      CohortDefinition cohortDefinitionA,
-      CohortDefinition cohortDefinitionB,
-      CohortDefinition cohortDefinitionC) {
+      final Month month,
+      final CohortDefinition cohortDefinitionA,
+      final CohortDefinition cohortDefinitionB,
+      final CohortDefinition cohortDefinitionC) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
     cd.setName("D - Patients of Current Cohort month " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch("A", EptsReportUtils.map(cohortDefinitionA, mapping));
     cd.addSearch("B", EptsReportUtils.map(cohortDefinitionB, mapping));
@@ -73,18 +73,18 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition getPatientsWhoWereRegisteredAsDead(
-      Month month,
-      ResumoTrimestralMonthPeriodCalculation calculator,
-      CohortDefinition cohortDefinitionD) {
+      final Month month,
+      final ResumoTrimestralMonthPeriodCalculation calculator,
+      final CohortDefinition cohortDefinitionD) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
 
     cd.setName("L - Get patients who Were Registered as Dead month " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch("D", EptsReportUtils.map(cohortDefinitionD, mapping));
     cd.addSearch(
@@ -97,19 +97,19 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition getPatientsWhoAbandonedArtTreatment(
-      Month month,
-      ResumoTrimestralMonthPeriodCalculation calculatorJ,
-      CohortDefinition cohortDefinitionD,
-      CohortDefinition cohortDefinitionI,
-      CohortDefinition cohortDefinitionL) {
+      final Month month,
+      final ResumoTrimestralMonthPeriodCalculation calculatorJ,
+      final CohortDefinition cohortDefinitionD,
+      final CohortDefinition cohortDefinitionI,
+      final CohortDefinition cohortDefinitionL) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
     cd.setName("J - Patients Who Abandoned Art Treatment for month " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch(
         "J", EptsReportUtils.map(this.getPatientsForMonthlyCohort(month, calculatorJ), mapping));
@@ -123,20 +123,20 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition getPatientsWhoStillInFirstTerapeuticLine(
-      Month month,
-      ResumoTrimestralMonthPeriodCalculation calculatorE,
-      CohortDefinition cohortDefinitionD,
-      CohortDefinition cohortDefinitionI,
-      CohortDefinition cohortDefinitionJ,
-      CohortDefinition cohortDefinitionL) {
+      final Month month,
+      final ResumoTrimestralMonthPeriodCalculation calculatorE,
+      final CohortDefinition cohortDefinitionD,
+      final CohortDefinition cohortDefinitionI,
+      final CohortDefinition cohortDefinitionJ,
+      final CohortDefinition cohortDefinitionL) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
     cd.setName("E - Patients Who Still on First Line for month " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch("D", EptsReportUtils.map(cohortDefinitionD, mapping));
     cd.addSearch(
@@ -151,20 +151,20 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition getPatientsWhoAreInSecondTerapeuticLine(
-      Month month,
-      ResumoTrimestralMonthPeriodCalculation calculatorG,
-      CohortDefinition cohortDefinitionD,
-      CohortDefinition cohortDefinitionI,
-      CohortDefinition cohortDefinitionJ,
-      CohortDefinition cohortDefinitionL) {
+      final Month month,
+      final ResumoTrimestralMonthPeriodCalculation calculatorG,
+      final CohortDefinition cohortDefinitionD,
+      final CohortDefinition cohortDefinitionI,
+      final CohortDefinition cohortDefinitionJ,
+      final CohortDefinition cohortDefinitionL) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
     cd.setName("H - Patients Who are in Second Terapeutic Line for month " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch("D", EptsReportUtils.map(cohortDefinitionD, mapping));
     cd.addSearch(
@@ -179,19 +179,19 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition findPatientsWhoHaveSuspendedTreatment(
-      Month month,
-      ResumoTrimestralMonthPeriodCalculation calculatoE,
-      ResumoTrimestralMonthPeriodCalculation calculatoI,
-      CohortDefinition cohortDefinitionD,
-      CohortDefinition cohortDefinitionL) {
+      final Month month,
+      final ResumoTrimestralMonthPeriodCalculation calculatoE,
+      final ResumoTrimestralMonthPeriodCalculation calculatoI,
+      final CohortDefinition cohortDefinitionD,
+      final CohortDefinition cohortDefinitionL) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
     cd.setName("I - Patients Who Have Suspended Treatment " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch("D", EptsReportUtils.map(cohortDefinitionD, mapping));
     cd.addSearch(
@@ -206,18 +206,18 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition getPatientsWhoStillInFirstTerapeuticLineWithViralLoadResultRegistered(
-      Month month,
-      ResumoTrimestralMonthPeriodCalculation calculatorF,
-      CohortDefinition cohortDefinitionE) {
+      final Month month,
+      final ResumoTrimestralMonthPeriodCalculation calculatorF,
+      final CohortDefinition cohortDefinitionE) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
     cd.setName(
         "F - Patients Who Still on First Line With Registered Viral Load for month " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch("E", EptsReportUtils.map(cohortDefinitionE, mapping));
     cd.addSearch(
@@ -229,17 +229,17 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition getPatientsWhoAreInSecondTerapeuticLineWithViralLoadResultRegistered(
-      Month month,
-      ResumoTrimestralMonthPeriodCalculation calculatorF,
-      CohortDefinition cohortDefinitionG) {
+      final Month month,
+      final ResumoTrimestralMonthPeriodCalculation calculatorF,
+      final CohortDefinition cohortDefinitionG) {
 
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
     cd.setName("F - Patients Who are in Second Line With Registered Viral Load for month " + month);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
 
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch("G", EptsReportUtils.map(cohortDefinitionG, mapping));
     cd.addSearch(
@@ -251,13 +251,13 @@ public class ResumoTrimestralCohortQueries {
   }
 
   public CohortDefinition getTotalPatientsQuarterly(
-      QUARTERLIES quarterly, List<CohortDefinition> cohortDefinitions) {
-    CompositionCohortDefinition cd = new CompositionCohortDefinition();
+      final QUARTERLIES quarterly, final List<CohortDefinition> cohortDefinitions) {
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
     cd.setName(" Total Quarterly " + quarterly);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
-    String mapping = "year=${year},quarter=${quarter},location=${location}";
+    final String mapping = "year=${year},quarter=${quarter},location=${location}";
 
     cd.addSearch("A", EptsReportUtils.map(cohortDefinitions.get(0), mapping));
     cd.addSearch("B", EptsReportUtils.map(cohortDefinitions.get(1), mapping));
@@ -269,9 +269,9 @@ public class ResumoTrimestralCohortQueries {
 
   @DocumentedDefinition(value = "patient Calculation")
   private CohortDefinition getPatientsWhoHaveInitiatedArtTreatmentCalculation(
-      Month month, ResumoTrimestralMonthPeriodCalculation calculator) {
+      final Month month, final ResumoTrimestralMonthPeriodCalculation calculator) {
 
-    BaseFghCalculationCohortDefinition cd =
+    final BaseFghCalculationCohortDefinition cd =
         new BaseFghCalculationCohortDefinition("Patient Calculation - " + month, calculator);
     cd.addParameter(new Parameter("year", "Year", String.class));
     cd.addParameter(new Parameter("quarter", "Quarter", String.class));

@@ -51,6 +51,9 @@ public class EptsReportsActivator extends BaseModuleActivator {
   @Override
   public void willStop() {
     log.debug("Stopping EPTS Reports Module");
+
+    reportsInitializer.removeEptsReportsGlobalProperties();
+
     try {
       reportsInitializer.purgeReports();
       log.debug("EPTS Reports purged");
@@ -62,6 +65,7 @@ public class EptsReportsActivator extends BaseModuleActivator {
   }
 
   /** @see #started() */
+  @Override
   public void started() {
 
     try {
@@ -89,6 +93,7 @@ public class EptsReportsActivator extends BaseModuleActivator {
   }
 
   /** @see #stopped() */
+  @Override
   public void stopped() {
     log.info("Stopped EPTS Reports Module");
   }

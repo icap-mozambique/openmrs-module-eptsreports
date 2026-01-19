@@ -125,7 +125,8 @@ public class TxNewDataset extends BaseDataSet {
         SIXTY_TO_SIXTY_FOUR,
         ABOVE_SIXTY_FIVE);
 
-    dataSetDefinition.addDimension("gender", EptsReportUtils.map(eptsCommonDimension.gender(), ""));
+    dataSetDefinition.addDimension(
+        "gender", EptsReportUtils.map(this.eptsCommonDimension.gender(), ""));
 
     this.addAGenderDimensionForUnkwonAgeDimension(dataSetDefinition);
 
@@ -329,7 +330,8 @@ public class TxNewDataset extends BaseDataSet {
             "patientNewlyEnrolledInHIVIndicator",
             EptsReportUtils.map(patientEnrolledInART, mappings));
 
-    dataSetDefinition.addDimension("gender", EptsReportUtils.map(eptsCommonDimension.gender(), ""));
+    dataSetDefinition.addDimension(
+        "gender", EptsReportUtils.map(this.eptsCommonDimension.gender(), ""));
     this.addDimensions(
         dataSetDefinition,
         mappings,
@@ -449,7 +451,7 @@ public class TxNewDataset extends BaseDataSet {
   }
 
   private void addAGenderDimensionForUnkwonAgeDimension(
-      CohortIndicatorDataSetDefinition dataSetDefinition) {
+      final CohortIndicatorDataSetDefinition dataSetDefinition) {
     dataSetDefinition.addDimension(
         this.getDimensionNameForUnkwonAge(Gender.MALE, AgeRange.UNKNOWN),
         EptsReportUtils.map(
@@ -468,8 +470,8 @@ public class TxNewDataset extends BaseDataSet {
   private void addColums(
       final CohortIndicatorDataSetDefinition dataSetDefinition,
       final String mappings,
-      String columnPrefix,
-      CohortIndicator cohortIndicator,
+      final String columnPrefix,
+      final CohortIndicator cohortIndicator,
       final AgeRange... rannges) {
 
     for (final AgeRange range : rannges) {
@@ -503,11 +505,11 @@ public class TxNewDataset extends BaseDataSet {
   private void addDimensions(
       final CohortIndicatorDataSetDefinition cohortIndicatorDataSetDefinition,
       final String mappings,
-      List<String> columnPrefixs,
+      final List<String> columnPrefixs,
       final AgeRange... ranges) {
 
     for (final AgeRange range : ranges) {
-      for (String columnPrefix : columnPrefixs) {
+      for (final String columnPrefix : columnPrefixs) {
 
         cohortIndicatorDataSetDefinition.addDimension(
             this.getColumnName(columnPrefix, range, Gender.MALE),
@@ -530,11 +532,12 @@ public class TxNewDataset extends BaseDataSet {
     }
   }
 
-  private String getColumnName(String columnPrefix, AgeRange range, Gender gender) {
+  private String getColumnName(
+      final String columnPrefix, final AgeRange range, final Gender gender) {
     return range.getDesagregationColumnName(columnPrefix, gender);
   }
 
-  private String getColumnName(AgeRange range, Gender gender) {
+  private String getColumnName(final AgeRange range, final Gender gender) {
     return range.getDesagregationColumnName("N", gender);
   }
 }
