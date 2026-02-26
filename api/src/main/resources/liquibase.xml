@@ -106,6 +106,14 @@
 		<sql>DROP PROCEDURE IF EXISTS TbResultsDataReconstruction</sql>
 	</changeSet>
 	
+	<changeSet id="20260226-17:00" author="icap">
+		<comment>
+			Fix home visit form
+		</comment>
+		<sqlFile
+			path="_metadata/update_htmlformentry_html_form_FR_HomeVisit_v2.sql" />
+	</changeSet>
+	
 		
 	<!--changeSet id="20230808-001" author="icap">
 		<comment>
