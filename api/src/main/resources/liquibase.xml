@@ -106,7 +106,7 @@
 		<sql>DROP PROCEDURE IF EXISTS TbResultsDataReconstruction</sql>
 	</changeSet>
 	
-	<changeSet id="20260226-17:00" author="icap">
+	<changeSet id="20260226-17:00" author="icap" runAlways="true">
 		<comment>
 			Fix home visit form
 		</comment>
