@@ -29,8 +29,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class Ec2PatientListDataset extends BaseDataSet {
 
-  public DataSetDefinition ec2DataSetDefinition(List<Parameter> parameterList) {
-    SqlDataSetDefinition dsd = new SqlDataSetDefinition();
+  public DataSetDefinition ec2DataSetDefinition(final List<Parameter> parameterList) {
+    final SqlDataSetDefinition dsd = new SqlDataSetDefinition();
     dsd.setName("EC2");
     dsd.addParameters(parameterList);
     dsd.setSqlQuery(Ec2Queries.getEc2CombinedQuery());

@@ -29,10 +29,12 @@ import org.openmrs.module.eptsreports.reporting.calculation.generic.StartedArtBe
 import org.openmrs.module.eptsreports.reporting.calculation.generic.StartedArtOnPeriodCalculation;
 import org.openmrs.module.eptsreports.reporting.cohort.definition.CalculationCohortDefinition;
 import org.openmrs.module.eptsreports.reporting.library.queries.BaseQueries;
+import org.openmrs.module.eptsreports.reporting.utils.EptsReportUtils;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.BaseObsCohortDefinition.TimeModifier;
 import org.openmrs.module.reporting.cohort.definition.CodedObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.CohortDefinition;
+import org.openmrs.module.reporting.cohort.definition.CompositionCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.InProgramCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.NumericObsCohortDefinition;
 import org.openmrs.module.reporting.cohort.definition.SqlCohortDefinition;
@@ -56,12 +58,12 @@ public class GenericCohortQueries {
    * @return the cohort definition
    */
   public CohortDefinition hasCodedObs(
-      Concept question,
-      TimeModifier timeModifier,
-      SetComparator operator,
-      List<EncounterType> encounterTypes,
-      List<Concept> values) {
-    CodedObsCohortDefinition cd = new CodedObsCohortDefinition();
+      final Concept question,
+      final TimeModifier timeModifier,
+      final SetComparator operator,
+      final List<EncounterType> encounterTypes,
+      final List<Concept> values) {
+    final CodedObsCohortDefinition cd = new CodedObsCohortDefinition();
     cd.setName("has obs between dates");
     cd.setQuestion(question);
     cd.setOperator(operator);
@@ -83,8 +85,8 @@ public class GenericCohortQueries {
    * @param values the answers to include
    * @return the cohort definition
    */
-  public CohortDefinition hasCodedObs(Concept question, List<Concept> values) {
-    return hasCodedObs(
+  public CohortDefinition hasCodedObs(final Concept question, final List<Concept> values) {
+    return this.hasCodedObs(
         question, BaseObsCohortDefinition.TimeModifier.ANY, SetComparator.IN, null, values);
   }
 
@@ -94,8 +96,8 @@ public class GenericCohortQueries {
    * @return CohortDefinition
    */
   @DocumentedDefinition(value = "generalSql")
-  public CohortDefinition generalSql(String name, String query) {
-    SqlCohortDefinition sql = new SqlCohortDefinition();
+  public CohortDefinition generalSql(final String name, final String query) {
+    final SqlCohortDefinition sql = new SqlCohortDefinition();
     sql.setName(name);
     sql.addParameter(new Parameter("startDate", "Start Date", Date.class));
     sql.addParameter(new Parameter("endDate", "End Date", Date.class));
@@ -113,11 +115,11 @@ public class GenericCohortQueries {
    * @param program the programs
    * @return the cohort definition
    */
-  public CohortDefinition createInProgram(String name, Program program) {
-    InProgramCohortDefinition inProgram = new InProgramCohortDefinition();
+  public CohortDefinition createInProgram(final String name, final Program program) {
+    final InProgramCohortDefinition inProgram = new InProgramCohortDefinition();
     inProgram.setName(name);
 
-    List<Program> programs = new ArrayList<Program>();
+    final List<Program> programs = new ArrayList<Program>();
     programs.add(program);
 
     inProgram.setPrograms(programs);
@@ -132,17 +134,18 @@ public class GenericCohortQueries {
    * @return CohortDefinition
    */
   public CohortDefinition getBaseCohort() {
-    Map<String, String> parameters = new HashMap<String, String>();
+    final Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(
         "arvAdultInitialEncounterTypeId",
-        String.valueOf(hivMetadata.getARVAdultInitialEncounterType().getEncounterTypeId()));
+        String.valueOf(this.hivMetadata.getARVAdultInitialEncounterType().getEncounterTypeId()));
     parameters.put(
         "arvPediatriaInitialEncounterTypeId",
-        String.valueOf(hivMetadata.getARVPediatriaInitialEncounterType().getEncounterTypeId()));
+        String.valueOf(
+            this.hivMetadata.getARVPediatriaInitialEncounterType().getEncounterTypeId()));
     parameters.put(
-        "hivCareProgramId", String.valueOf(hivMetadata.getHIVCareProgram().getProgramId()));
-    parameters.put("artProgramId", String.valueOf(hivMetadata.getARTProgram().getProgramId()));
-    return generalSql("baseCohort", BaseQueries.getBaseCohortQuery(parameters));
+        "hivCareProgramId", String.valueOf(this.hivMetadata.getHIVCareProgram().getProgramId()));
+    parameters.put("artProgramId", String.valueOf(this.hivMetadata.getARTProgram().getProgramId()));
+    return this.generalSql("baseCohort", BaseQueries.getBaseCohortQuery(parameters));
   }
 
   /**
@@ -152,12 +155,13 @@ public class GenericCohortQueries {
    * @param state
    * @return
    */
-  public CohortDefinition getPatientsBasedOnPatientStatesBeforeDate(int program, int state) {
-    SqlCohortDefinition cd = new SqlCohortDefinition();
+  public CohortDefinition getPatientsBasedOnPatientStatesBeforeDate(
+      final int program, final int state) {
+    final SqlCohortDefinition cd = new SqlCohortDefinition();
     cd.setName("Patient states based on end of reporting period");
     cd.addParameter(new Parameter("endDate", "End Date", Date.class));
     cd.addParameter(new Parameter("location", "Location", Location.class));
-    String query =
+    final String query =
         "SELECT pg.patient_id"
             + " FROM patient p"
             + " INNER JOIN patient_program pg ON p.patient_id=pg.patient_id"
@@ -169,9 +173,40 @@ public class GenericCohortQueries {
     return cd;
   }
 
+  /**
+   * Get deceased patients, we need to check in the person table and patient states,
+   *
+   * @return CohortDefinition
+   */
+  public CohortDefinition getDeceasedPatientsBeforeDate() {
+    final CompositionCohortDefinition cd = new CompositionCohortDefinition();
+    cd.setName("Get deceased patients based on patient states and person object");
+    cd.addParameter(new Parameter("endDate", "End Date", Date.class));
+    cd.addParameter(new Parameter("location", "Location", Location.class));
+
+    cd.addSearch(
+        "dead",
+        EptsReportUtils.map(
+            this.getPatientsBasedOnPatientStatesBeforeDate(
+                this.hivMetadata.getARTProgram().getProgramId(),
+                this.hivMetadata.getPatientHasDiedWorkflowState().getProgramWorkflowStateId()),
+            "endDate=${endDate},location=${location}"));
+    cd.addSearch(
+        "deceased",
+        EptsReportUtils.map(
+            this.generalSql(
+                "deceased",
+                "SELECT patient_id FROM patient pa INNER JOIN person pe ON pa.patient_id=pe.person_id AND pe.dead=1 WHERE pe.death_date <=:endDate"),
+            "endDate=${endDate}"));
+    cd.setCompositionString("dead OR deceased");
+    return cd;
+  }
+
   public CohortDefinition getAgeOnArtStartDate(
-      Integer minAge, Integer maxAge, boolean considerPatientThatStartedBeforeWasBorn) {
-    CalculationCohortDefinition cd =
+      final Integer minAge,
+      final Integer maxAge,
+      final boolean considerPatientThatStartedBeforeWasBorn) {
+    final CalculationCohortDefinition cd =
         new CalculationCohortDefinition(
             Context.getRegisteredComponents(AgeOnArtStartDateCalculation.class).get(0));
     cd.setName("Age on ART start date");
@@ -183,13 +218,13 @@ public class GenericCohortQueries {
     return cd;
   }
 
-  public CohortDefinition getAgeOnArtStartDate(Integer minAge, Integer maxAge) {
-    return getAgeOnArtStartDate(minAge, maxAge, false);
+  public CohortDefinition getAgeOnArtStartDate(final Integer minAge, final Integer maxAge) {
+    return this.getAgeOnArtStartDate(minAge, maxAge, false);
   }
 
   public CohortDefinition getStartedArtOnPeriod(
-      boolean considerTransferredIn, boolean considerPharmacyEncounter) {
-    CalculationCohortDefinition cd =
+      final boolean considerTransferredIn, final boolean considerPharmacyEncounter) {
+    final CalculationCohortDefinition cd =
         new CalculationCohortDefinition(
             Context.getRegisteredComponents(StartedArtOnPeriodCalculation.class).get(0));
     cd.setName("Art start date");
@@ -201,8 +236,8 @@ public class GenericCohortQueries {
     return cd;
   }
 
-  public CohortDefinition getStartedArtBeforeDate(boolean considerTransferredIn) {
-    CalculationCohortDefinition cd =
+  public CohortDefinition getStartedArtBeforeDate(final boolean considerTransferredIn) {
+    final CalculationCohortDefinition cd =
         new CalculationCohortDefinition(
             Context.getRegisteredComponents(StartedArtBeforeDateCalculation.class).get(0));
     cd.setName("Art start date");
@@ -213,15 +248,15 @@ public class GenericCohortQueries {
   }
 
   public CohortDefinition hasNumericObs(
-      Concept question,
-      TimeModifier timeModifier,
-      RangeComparator operator1,
-      Double value1,
-      RangeComparator operator2,
-      Double value2,
-      List<EncounterType> encounterTypes) {
+      final Concept question,
+      final TimeModifier timeModifier,
+      final RangeComparator operator1,
+      final Double value1,
+      final RangeComparator operator2,
+      final Double value2,
+      final List<EncounterType> encounterTypes) {
 
-    NumericObsCohortDefinition cd = new NumericObsCohortDefinition();
+    final NumericObsCohortDefinition cd = new NumericObsCohortDefinition();
     cd.setTimeModifier(timeModifier);
     cd.setQuestion(question);
     cd.setName("has obs with numeric value ranges");

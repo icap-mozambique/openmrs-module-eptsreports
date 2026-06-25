@@ -44,6 +44,7 @@ public class TxRetDatasetFGHLiveTest extends DefinitionsFGHLiveTest {
     return testsHelper.getDate("2019-05-16 00:00:00.0");
   }
 
+  @Override
   protected Location getLocation() {
     return Context.getLocationService().getLocation(6);
   }

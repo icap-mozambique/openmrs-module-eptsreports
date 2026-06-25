@@ -40,44 +40,50 @@ public class TbPrevDataset extends BaseDataSet {
   @Qualifier("commonAgeDimensionCohort")
   private AgeDimensionCohortInterface ageDimensionCohort;
 
-  public DataSetDefinition constructDatset() {
-    CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
-    String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
+  public DataSetDefinition constructDatset(final Boolean isCommunity) {
+    final CohortIndicatorDataSetDefinition dsd = new CohortIndicatorDataSetDefinition();
+    final String mappings = "startDate=${startDate},endDate=${endDate},location=${location}";
     dsd.setName("TB PREV Data Set");
-    dsd.addParameters(getParameters());
-    dsd.addDimension("gender", EptsReportUtils.map(eptsCommonDimension.gender(), ""));
+    dsd.addParameters(this.getParameters());
+    dsd.addDimension("gender", EptsReportUtils.map(this.eptsCommonDimension.gender(), ""));
     dsd.addDimension(
         "age",
         EptsReportUtils.map(
-            eptsCommonDimension.age(ageDimensionCohort), "effectiveDate=${endDate}"));
+            this.eptsCommonDimension.age(this.ageDimensionCohort), "effectiveDate=${endDate}"));
 
     dsd.addDimension(
         "art-status",
-        EptsReportUtils.map(eptsCommonDimension.getTbPrevArtStatusDimension(), mappings));
+        EptsReportUtils.map(this.eptsCommonDimension.getTbPrevArtStatusDimension(), mappings));
 
-    CohortIndicator denominatorIndicator =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator denominatorIndicator =
+        this.eptsGeneralIndicator.getIndicator(
             "Denominator Total",
-            EptsReportUtils.map(txTbPrevCohortQueries.getTbPrevTotalDenominator(), mappings));
+            EptsReportUtils.map(
+                this.txTbPrevCohortQueries.getTbPrevTotalDenominator(isCommunity), mappings));
 
-    CohortIndicator numeratorIndicator =
-        eptsGeneralIndicator.getIndicator(
+    final CohortIndicator numeratorIndicator =
+        this.eptsGeneralIndicator.getIndicator(
             "Numerador Total",
-            EptsReportUtils.map(txTbPrevCohortQueries.getTbPrevTotalNumerator(), mappings));
+            EptsReportUtils.map(
+                this.txTbPrevCohortQueries.getTbPrevTotalNumerator(isCommunity), mappings));
 
     dsd.addColumn(
         "DEN-TOTAL", "Denominator Total", EptsReportUtils.map(denominatorIndicator, mappings), "");
     dsd.addColumn(
         "NUM-TOTAL", "Numerador Total", EptsReportUtils.map(numeratorIndicator, mappings), "");
 
-    addRow(
+    this.addRow(
         dsd,
         "R02",
         "Denominator",
         EptsReportUtils.map(denominatorIndicator, mappings),
-        getColumns());
-    addRow(
-        dsd, "R01", "Numerator", EptsReportUtils.map(numeratorIndicator, mappings), getColumns());
+        this.getColumns());
+    this.addRow(
+        dsd,
+        "R01",
+        "Numerator",
+        EptsReportUtils.map(numeratorIndicator, mappings),
+        this.getColumns());
 
     return dsd;
   }

@@ -125,7 +125,8 @@ public class PrepNewDataset extends BaseDataSet {
         FORTY_FIVE_TO_FORTY_NINE,
         ABOVE_FIFTY);
 
-    dataSetDefinition.addDimension("gender", EptsReportUtils.map(eptsCommonDimension.gender(), ""));
+    dataSetDefinition.addDimension(
+        "gender", EptsReportUtils.map(this.eptsCommonDimension.gender(), ""));
 
     dataSetDefinition.addDimension(
         this.getColumnName(AgeRange.UNKNOWN, Gender.MALE),
@@ -304,7 +305,7 @@ public class PrepNewDataset extends BaseDataSet {
     }
   }
 
-  private String getColumnName(AgeRange range, Gender gender) {
+  private String getColumnName(final AgeRange range, final Gender gender) {
     return range.getDesagregationColumnName("PREP-N", gender);
   }
 }

@@ -47,7 +47,13 @@ public enum AgeRange {
 
   CHILDREN("bellow4teen", 0, 14),
 
-  ADULT("above5teen", 15, 150);
+  ADULT("above5teen", 15, 150),
+
+  UNDER_TEN("under10", 0, 10),
+
+  TEN_TO_NINETEEN("tenTo19", 10, 19),
+
+  ABOVE_TWENTY("above20", 0, 20);
 
   private final String name;
   private final int min;

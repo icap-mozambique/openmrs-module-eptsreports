@@ -67,6 +67,7 @@ public class SetupMERQuarterly extends EptsPeriodIndicatorDataExportManager {
   @Autowired private TxPvlsSuplementalDataSet txPvlsSuplementalDataSet;
 
   @Autowired protected GenericCohortQueries genericCohortQueries;
+
   @Autowired private DatimCodeDataSet datimCodeDataSet;
 
   @Override

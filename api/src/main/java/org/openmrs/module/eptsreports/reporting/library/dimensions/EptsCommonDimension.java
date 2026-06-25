@@ -603,6 +603,41 @@ public class EptsCommonDimension {
     return dimension;
   }
 
+  public CohortDefinitionDimension findPatientsByRangePFACT(
+      final String name, final AgeRange range) {
+    final CohortDefinitionDimension dimension = new CohortDefinitionDimension();
+
+    dimension.setName(name);
+    dimension.addParameter(new Parameter("endDate", "End Date", Date.class));
+
+    String query = DSDQueriesInterface.QUERY.findPatientsByAgeRangePFACT();
+
+    switch (range) {
+      case UNDER_TEN:
+        query += "< 10";
+        break;
+
+      case TEN_TO_NINETEEN:
+        query += "between " + range.getMin() + " and " + range.getMax();
+        break;
+
+      case ABOVE_TWENTY:
+        query += ">= 20";
+        break;
+
+      default:
+        break;
+    }
+
+    dimension.addCohortDefinition(
+        name,
+        EptsReportUtils.map(
+            this.genericCohortQueries.generalSql("findPatientsByRange", query),
+            "endDate=${endDate}"));
+
+    return dimension;
+  }
+
   public CohortDefinitionDimension findClientsWhoAreNewlyEnrolledInPrepByGenderAndAgeRange(
       final String name, final String gender, final AgeRange ageRange) {
 

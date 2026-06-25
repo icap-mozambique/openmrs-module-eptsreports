@@ -14,9 +14,9 @@ public interface DSDQueriesInterface {
 
       BIMONTHLY(4);
 
-      private Integer intervalValue;
+      private final Integer intervalValue;
 
-      private DSDDispensationInterval(Integer intervalValue) {
+      private DSDDispensationInterval(final Integer intervalValue) {
         this.intervalValue = intervalValue;
       }
 
@@ -42,9 +42,9 @@ public interface DSDQueriesInterface {
 
       CM_NOTURNA(8);
 
-      private Integer value;
+      private final Integer value;
 
-      private DSDModeTypeLevel1(Integer value) {
+      private DSDModeTypeLevel1(final Integer value) {
         this.value = value;
       }
 
@@ -72,9 +72,9 @@ public interface DSDQueriesInterface {
 
       FR(23729);
 
-      private Integer conceptId;
+      private final Integer conceptId;
 
-      private DSDModelTypeLevel2(Integer conceptId) {
+      private DSDModelTypeLevel2(final Integer conceptId) {
         this.conceptId = conceptId;
       }
 
@@ -182,9 +182,10 @@ public interface DSDQueriesInterface {
             + "    and obsOpenDate.value_datetime >=:startDate and obsOpenDate.value_datetime < :endDate and e.location_id=:location  "
             + ") transferido_de                                                                                                                                ";
 
-    public static String findPatientsWhoAreIncludedInDSDModel(DSDDispensationInterval dsdInterval) {
+    public static String findPatientsWhoAreIncludedInDSDModel(
+        final DSDDispensationInterval dsdInterval) {
 
-      String sql =
+      final String sql =
           "select patient_id "
               + "from "
               + "( "
@@ -375,9 +376,9 @@ public interface DSDQueriesInterface {
       return String.format(sql, dsdInterval.getIntervalValue());
     }
 
-    public static final String findPatientsWhoAreIncludedInDSDModel(DSDModeTypeLevel1 dsdMode) {
-
-      String sql =
+    public static final String findPatientsWhoAreIncludedInDSDModel(
+        final DSDModeTypeLevel1 dsdMode) {
+      final String sql =
           ""
               + " select patient_id  "
               + "               from  "
@@ -595,8 +596,8 @@ public interface DSDQueriesInterface {
     }
 
     public static final String findPatientsWhoAreIncludedInDSDModel(
-        DSDModelTypeLevel2 dsdModelType) {
-      String sql =
+        final DSDModelTypeLevel2 dsdModelType) {
+      final String sql =
           "select ultima_ficha.patient_id "
               + "from "
               + "( "
@@ -617,6 +618,143 @@ public interface DSDQueriesInterface {
       return String.format(sql, dsdModelType.getConceptId());
     }
 
+    public static final String findPatientsWhoAreIncludedInDSDModelICAP(
+        final DSDModeTypeLevel1 dsdMode) {
+      final String sql =
+          "select patient_id "
+              + "from "
+              + "( "
+              + "    select * "
+              + "    from "
+              + "    ( "
+              + "        select * "
+              + "        from "
+              + "        ( "
+              + "            select ultimo_fila.patient_id, "
+              + "                  max(data_proximo_levantamento.value_datetime) data_consulta, "
+              + "                  case modo_dispensa.value_coded "
+              + "                    when 165177 then 1 "
+              + "                    when 165179 then 2 "
+              + "                    when 165178 then 3 "
+              + "                    when 165181 then 4 "
+              + "                    when 165182 then 5 "
+              + "                    when 165176 then 6 "
+              + "                    when 165180 then 7 "
+              + "                    when 165183 then 8 "
+              + "                  else 10 end as tipo_dispensa, "
+              + "                  1  as fonte, "
+              + "            1  as ordem_mdc "
+              + "            from "
+              + "            ( "
+              + "                select p.patient_id, max(encounter_datetime) "
+              + "                data_ultimo_levantamento "
+              + "                from patient p "
+              + "                  inner join encounter e on e.patient_id=p.patient_id "
+              + "                where p.voided=0 and e.voided=0 and e.encounter_type=18 and e.location_id=:location "
+              + "                  and e.encounter_datetime <=:endDate "
+              + "                  group by p.patient_id "
+              + "            ) ultimo_fila "
+              + "              inner join encounter e on e.patient_id = ultimo_fila.patient_id "
+              + "                inner join obs data_proximo_levantamento on data_proximo_levantamento.encounter_id = e.encounter_id "
+              + "                inner join obs modo_dispensa on modo_dispensa.encounter_id = e.encounter_id "
+              + "            where e.voided = 0 and data_proximo_levantamento.voided = 0 and modo_dispensa.voided = 0 and e.encounter_type=18 "
+              + "              and date(e.encounter_datetime) = date(ultimo_fila.data_ultimo_levantamento) and modo_dispensa.concept_id =165174 "
+              + "                and data_proximo_levantamento.concept_id =5096 and e.location_id = :location group by ultimo_fila.patient_id "
+              + "             union "
+              + "                select tipoDispensa.patient_id,data_consulta,tipo_dispensa,fonte,ordem_mdc "
+              + "				from ( "
+              + "			    select ultimo_mdc.patient_id, "
+              + "                   ultimo_mdc.data_consulta, "
+              + "                   case o.value_coded "
+              + "                    when 165315 then 1 "
+              + "                    when 165179 then 2 "
+              + "                    when 165178 then 3 "
+              + "                    when 165264 then 4 "
+              + "                    when 165265 then 5 "
+              + "                    when 165316 then 6 "
+              + "                    else 10 end as tipo_dispensa, "
+              + "                    2  as fonte, "
+              + "                    case o.value_coded "
+              + "                    when 165315 then 1 "
+              + "                    when 165179 then 1 "
+              + "                    when 165178 then 1 "
+              + "                    when 165264 then 1 "
+              + "                    when 165265 then 1 "
+              + "                    when 165316 then 1 "
+              + "                   else 2 end as ordem_mdc "
+              + "                  from "
+              + "                 ( "
+              + "                select p.patient_id, max(e.encounter_datetime) data_consulta "
+              + "                from patient p "
+              + "                  inner join encounter e on p.patient_id=e.patient_id "
+              + "                  inner join obs o on o.encounter_id=e.encounter_id "
+              + "                where p.voided = 0 and e.voided=0 and o.voided=0 "
+              + "                  and e.encounter_type = 6 and e.encounter_datetime<=:endDate and e.location_id=:location "
+              + "                  group by p.patient_id "
+              + "            ) ultimo_mdc "
+              + "              inner join encounter e on ultimo_mdc.patient_id=e.patient_id "
+              + "          inner join obs grupo on grupo.encounter_id=e.encounter_id "
+              + "             inner join obs o on o.encounter_id=e.encounter_id "
+              + "              inner join obs obsEstado on obsEstado.encounter_id=e.encounter_id "
+              + "            where e.encounter_type=6 and e.location_id=:location "
+              + "              and o.concept_id=165174 and o.voided=0 "
+              + "                and grupo.concept_id=165323  and grupo.voided=0 "
+              + "                and obsEstado.concept_id=165322  and obsEstado.value_coded in(1256,1257) "
+              + "                and obsEstado.voided=0  and grupo.voided=0 "
+              + "                and grupo.obs_id=o.obs_group_id and grupo.obs_id=obsEstado.obs_group_id "
+              + "                and e.encounter_datetime=ultimo_mdc.data_consulta  and o.value_coded "
+              + "                ) tipoDispensa left join "
+              + "                ( "
+              + "                select max_fila.patient_id, data_proximo_levantamento from ( "
+              + "               select max_fila.patient_id,  max(data_proximo_levantamento.value_datetime) data_proximo_levantamento  from ( "
+              + "               select p.patient_id, max(encounter_datetime) "
+              + "                data_ultimo_levantamento "
+              + "                from patient p "
+              + "                  inner join encounter e on e.patient_id=p.patient_id "
+              + "                where p.voided=0 and e.voided=0 and e.encounter_type=18 and e.location_id=:location "
+              + "                  and e.encounter_datetime <=:endDate "
+              + "                  group by p.patient_id "
+              + "                  ) max_fila "
+              + "                  inner join encounter e on e.patient_id = max_fila.patient_id "
+              + "                inner join obs data_proximo_levantamento on data_proximo_levantamento.encounter_id = e.encounter_id "
+              + "               where e.voided = 0 and data_proximo_levantamento.voided = 0 and e.encounter_type=18 "
+              + "              and date(e.encounter_datetime) = date(max_fila.data_ultimo_levantamento) "
+              + "                and data_proximo_levantamento.concept_id =5096 and e.location_id = :location group by max_fila.patient_id "
+              + "                ) max_fila "
+              + "                  left join ( "
+              + "                  select ultimo_fila.patient_id, "
+              + "                  max(data_proximo_levantamento.value_datetime) data_consulta "
+              + "            from "
+              + "            ( "
+              + "                select p.patient_id, max(encounter_datetime) "
+              + "                data_ultimo_levantamento "
+              + "                from patient p "
+              + "                  inner join encounter e on e.patient_id=p.patient_id "
+              + "                where p.voided=0 and e.voided=0 and e.encounter_type=18 and e.location_id=:location "
+              + "                  and e.encounter_datetime <=:endDate "
+              + "                  group by p.patient_id "
+              + "            ) ultimo_fila "
+              + "              inner join encounter e on e.patient_id = ultimo_fila.patient_id "
+              + "                inner join obs data_proximo_levantamento on data_proximo_levantamento.encounter_id = e.encounter_id "
+              + "                inner join obs modo_dispensa on modo_dispensa.encounter_id = e.encounter_id "
+              + "            where e.voided = 0 and data_proximo_levantamento.voided = 0 and e.encounter_type=18 "
+              + "              and date(e.encounter_datetime) = date(ultimo_fila.data_ultimo_levantamento) "
+              + "              and modo_dispensa.concept_id = 165174 and modo_dispensa.voided = 0 "
+              + "                and data_proximo_levantamento.concept_id =5096 and e.location_id = :location group by ultimo_fila.patient_id "
+              + "                )filaWithMDS on filaWithMDS.patient_id = max_fila.patient_id "
+              + "                where filaWithMDS.patient_id is null "
+              + "                )filaWithoutMDS on filaWithoutMDS.patient_id = tipoDispensa.patient_id "
+              + "                where (tipoDispensa.data_consulta > filaWithoutMDS.data_proximo_levantamento OR filaWithoutMDS.data_proximo_levantamento is null) "
+              + "        ) todas_fontes "
+              + "        order by patient_id,data_consulta desc, fonte, ordem_mdc "
+              + "    ) primeira_fonte "
+              + "    group by patient_id "
+              + ") dispensa "
+              + "where dispensa.tipo_dispensa = %s ";
+
+      return String.format(sql, dsdMode.getIntervalValue());
+    }
+
     public static final String findPatientsByAgeRange() {
 
       return "select patient.patient_id from patient                         		"
@@ -625,7 +763,15 @@ public interface DSDQueriesInterface {
           + "	and (TIMESTAMPDIFF(year,birthdate,:endDate)) 			    ";
     }
 
-    public static String findPatientsWhoArePregnantsAndBreastFeeding(TypePTV typePTV) {
+    public static final String findPatientsByAgeRangePFACT() {
+
+      return "select patient.patient_id from patient                         		"
+          + "	inner join person on person.person_id = patient.patient_id		"
+          + "where patient.voided = 0 and person.voided = 0 AND birthdate IS NOT NULL "
+          + "	and (TIMESTAMPDIFF(year,birthdate,:endDate)) 		    ";
+    }
+
+    public static String findPatientsWhoArePregnantsAndBreastFeeding(final TypePTV typePTV) {
 
       String query =
           "select patient_id from ( select inicio_real.patient_id,gravida_real.data_gravida, lactante_real.data_parto, "
@@ -785,5 +931,11 @@ public interface DSDQueriesInterface {
             + "group by p.patient_id "
             + ")maxEnc on maxEnc.patient_id = breastfeeding.patient_id "
             + "where TIMESTAMPDIFF(month,breastfeeding.encounter_datetime,maxEnc.encounter_datetime) >= 11 ";
+
+    // TODO: Por rever
+    public static final String findPatientsAgeRange =
+        "SELECT patient_id FROM patient "
+            + "INNER JOIN person ON patient_id = person_id WHERE patient.voided=0 AND person.voided=0 "
+            + "AND TIMESTAMPDIFF(year,birthdate,:endDate) BETWEEN %d AND %d AND birthdate IS NOT NULL";
   }
 }

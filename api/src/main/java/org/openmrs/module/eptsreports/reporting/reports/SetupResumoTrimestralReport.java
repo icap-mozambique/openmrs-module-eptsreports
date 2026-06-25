@@ -13,8 +13,6 @@
  */
 package org.openmrs.module.eptsreports.reporting.reports;
 
-import static org.openmrs.module.reporting.evaluation.parameter.Mapped.mapStraightThrough;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +25,7 @@ import org.openmrs.module.eptsreports.reporting.library.datasets.resumo.ResumoTr
 import org.openmrs.module.eptsreports.reporting.reports.manager.EptsDataExportManager;
 import org.openmrs.module.reporting.ReportingConstants;
 import org.openmrs.module.reporting.ReportingException;
+import org.openmrs.module.reporting.evaluation.parameter.Mapped;
 import org.openmrs.module.reporting.evaluation.parameter.Parameter;
 import org.openmrs.module.reporting.report.ReportDesign;
 import org.openmrs.module.reporting.report.definition.ReportDefinition;
@@ -40,11 +39,11 @@ public class SetupResumoTrimestralReport extends EptsDataExportManager {
 
   public static final String QUARTER_PARAMETER = "quarter";
 
-  private ResumoTrimestralDataSetDefinition resumoTrimestralDataSetDefinition;
+  private final ResumoTrimestralDataSetDefinition resumoTrimestralDataSetDefinition;
 
   @Autowired
   public SetupResumoTrimestralReport(
-      ResumoTrimestralDataSetDefinition resumoTrimestralDataSetDefinition) {
+      final ResumoTrimestralDataSetDefinition resumoTrimestralDataSetDefinition) {
     this.resumoTrimestralDataSetDefinition = resumoTrimestralDataSetDefinition;
   }
 
@@ -70,15 +69,16 @@ public class SetupResumoTrimestralReport extends EptsDataExportManager {
 
   @Override
   public ReportDefinition constructReportDefinition() {
-    ReportDefinition rd = new ReportDefinition();
-    rd.setUuid(getUuid());
-    rd.setName(getName());
-    rd.setDescription(getDescription());
-    rd.addParameters(getDataParameters());
-    rd.addDataSetDefinition("HF", mapStraightThrough(new LocationDataSetDefinition()));
+    final ReportDefinition rd = new ReportDefinition();
+    rd.setUuid(this.getUuid());
+    rd.setName(this.getName());
+    rd.setDescription(this.getDescription());
+    rd.addParameters(SetupResumoTrimestralReport.getDataParameters());
+    rd.addDataSetDefinition("HF", Mapped.mapStraightThrough(new LocationDataSetDefinition()));
     rd.addDataSetDefinition(
         "T",
-        mapStraightThrough(resumoTrimestralDataSetDefinition.constructResumoTrimestralDataset()));
+        Mapped.mapStraightThrough(
+            this.resumoTrimestralDataSetDefinition.constructResumoTrimestralDataset()));
 
     return rd;
   }
@@ -89,51 +89,53 @@ public class SetupResumoTrimestralReport extends EptsDataExportManager {
   }
 
   @Override
-  public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
+  public List<ReportDesign> constructReportDesigns(final ReportDefinition reportDefinition) {
     ReportDesign reportDesign = null;
     try {
       reportDesign =
-          createXlsReportDesign(
+          this.createXlsReportDesign(
               reportDefinition,
               "Resumo_Trimestral.xls",
               "Resumo Trimestral",
-              getExcelDesignUuid(),
+              this.getExcelDesignUuid(),
               null);
-      Properties props = new Properties();
+      final Properties props = new Properties();
       props.put("sortWeight", "5000");
       reportDesign.setProperties(props);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new ReportingException(e.toString());
     }
     return Arrays.asList(reportDesign);
   }
 
   public static List<Parameter> getDataParameters() {
-    List<Parameter> parameters = new ArrayList<Parameter>();
-    parameters.addAll(getCustomParameteres());
+    final List<Parameter> parameters = new ArrayList<Parameter>();
+    parameters.addAll(SetupResumoTrimestralReport.getCustomParameteres());
     parameters.add(ReportingConstants.LOCATION_PARAMETER);
     return parameters;
   }
 
   public static List<Parameter> getCustomParameteres() {
-    return Arrays.asList(getYearConfigurableParameter(), getQuarterConfigurableParameter());
+    return Arrays.asList(
+        SetupResumoTrimestralReport.getYearConfigurableParameter(),
+        SetupResumoTrimestralReport.getQuarterConfigurableParameter());
   }
 
   private static Parameter getYearConfigurableParameter() {
     final Parameter parameter = new Parameter();
-    parameter.setName(YEAR_PARAMETER);
+    parameter.setName(SetupResumoTrimestralReport.YEAR_PARAMETER);
     parameter.setLabel("Ano");
     parameter.setType(String.class);
     parameter.setCollectionType(List.class);
     parameter.setRequired(Boolean.TRUE);
 
-    Properties props = new Properties();
-    Calendar currentDate = Calendar.getInstance();
-    int currentYear = currentDate.get(Calendar.YEAR);
+    final Properties props = new Properties();
+    final Calendar currentDate = Calendar.getInstance();
+    final int currentYear = currentDate.get(Calendar.YEAR);
 
     String codedOptions = "";
     for (int i = 0; i < 5; i++) {
-      int year = currentYear - i;
+      final int year = currentYear - i;
       if (i == 0) {
         codedOptions += year;
 
@@ -150,13 +152,13 @@ public class SetupResumoTrimestralReport extends EptsDataExportManager {
 
   private static Parameter getQuarterConfigurableParameter() {
     final Parameter parameter = new Parameter();
-    parameter.setName(QUARTER_PARAMETER);
+    parameter.setName(SetupResumoTrimestralReport.QUARTER_PARAMETER);
     parameter.setLabel("Trimestre");
     parameter.setType(String.class);
     parameter.setCollectionType(List.class);
     parameter.setRequired(Boolean.TRUE);
 
-    Properties props = new Properties();
+    final Properties props = new Properties();
     props.put(
         "codedOptions",
         QUARTERLIES.QUARTER_ONE.getDescription()

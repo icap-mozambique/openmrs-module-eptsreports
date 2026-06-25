@@ -50,12 +50,13 @@ public class SetupCXCASCRN extends EptsDataExportManager {
 
   @Override
   public ReportDefinition constructReportDefinition() {
-    ReportDefinition rd = new ReportDefinition();
-    rd.setUuid(getUuid());
-    rd.setName(getName());
-    rd.setDescription(getDescription());
-    rd.setParameters(cxCaSCRNDataSet.getParameters());
-    rd.addDataSetDefinition("CX", Mapped.mapStraightThrough(cxCaSCRNDataSet.constructDatset()));
+    final ReportDefinition rd = new ReportDefinition();
+    rd.setUuid(this.getUuid());
+    rd.setName(this.getName());
+    rd.setDescription(this.getDescription());
+    rd.setParameters(this.cxCaSCRNDataSet.getParameters());
+    rd.addDataSetDefinition(
+        "CX", Mapped.mapStraightThrough(this.cxCaSCRNDataSet.constructDatset(Boolean.FALSE)));
 
     rd.setBaseCohortDefinition(
         EptsReportUtils.map(
@@ -66,16 +67,16 @@ public class SetupCXCASCRN extends EptsDataExportManager {
   }
 
   @Override
-  public List<ReportDesign> constructReportDesigns(ReportDefinition reportDefinition) {
+  public List<ReportDesign> constructReportDesigns(final ReportDefinition reportDefinition) {
     ReportDesign reportDesign = null;
     try {
       reportDesign =
-          createXlsReportDesign(
-              reportDefinition, "CXCASCRN.xls", "CXCASCRN ", getExcelDesignUuid(), null);
-      Properties props = new Properties();
+          this.createXlsReportDesign(
+              reportDefinition, "CXCASCRN.xls", "CXCASCRN ", this.getExcelDesignUuid(), null);
+      final Properties props = new Properties();
       props.put("sortWeight", "5000");
       reportDesign.setProperties(props);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new ReportingException(e.toString());
     }
 

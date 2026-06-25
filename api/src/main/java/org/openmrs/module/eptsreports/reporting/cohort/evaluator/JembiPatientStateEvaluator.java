@@ -22,18 +22,18 @@ public class JembiPatientStateEvaluator implements PatientDataEvaluator {
 
   @Override
   public EvaluatedPatientData evaluate(
-      PatientDataDefinition cohortDefinition, EvaluationContext context)
+      final PatientDataDefinition cohortDefinition, final EvaluationContext context)
       throws EvaluationException {
 
-    JembiPatientStateDefinition def = (JembiPatientStateDefinition) cohortDefinition;
+    final JembiPatientStateDefinition def = (JembiPatientStateDefinition) cohortDefinition;
 
-    EvaluatedPatientData c = new EvaluatedPatientData(def, context);
+    final EvaluatedPatientData c = new EvaluatedPatientData(def, context);
 
     if (context.getBaseCohort() != null && context.getBaseCohort().isEmpty()) {
       return c;
     }
 
-    HqlQueryBuilder qb = new HqlQueryBuilder();
+    final HqlQueryBuilder qb = new HqlQueryBuilder();
     qb.select("patientState.patientProgram.patient.patientId", "patientState");
     qb.from(PatientState.class, "patientState");
     qb.whereIn("patientState.state", def.getStates());
@@ -53,15 +53,15 @@ public class JembiPatientStateEvaluator implements PatientDataEvaluator {
       qb.orderAsc("patientState.startDate");
     }
 
-    List<Object[]> queryResult = evaluationService.evaluateToList(qb, context);
+    final List<Object[]> queryResult = this.evaluationService.evaluateToList(qb, context);
 
-    ListMap<Integer, PatientState> obsForPatients = new ListMap<>();
-    for (Object[] row : queryResult) {
+    final ListMap<Integer, PatientState> obsForPatients = new ListMap<>();
+    for (final Object[] row : queryResult) {
       obsForPatients.putInList((Integer) row[0], (PatientState) row[1]);
     }
 
-    for (Integer pId : obsForPatients.keySet()) {
-      List<PatientState> l = obsForPatients.get(pId);
+    for (final Integer pId : obsForPatients.keySet()) {
+      final List<PatientState> l = obsForPatients.get(pId);
       if (def.getWhich() == TimeQualifier.LAST || def.getWhich() == TimeQualifier.FIRST) {
         c.addData(pId, l.get(0));
       } else {

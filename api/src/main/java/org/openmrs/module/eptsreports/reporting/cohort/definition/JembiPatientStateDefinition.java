@@ -35,34 +35,34 @@ public class JembiPatientStateDefinition extends BaseDataDefinition
   }
 
   public List<ProgramWorkflowState> getStates() {
-    return states;
+    return this.states;
   }
 
-  public void setStates(List<ProgramWorkflowState> states) {
+  public void setStates(final List<ProgramWorkflowState> states) {
     this.states = states;
   }
 
   public Date getStartedOnOrBefore() {
-    return startedOnOrBefore;
+    return this.startedOnOrBefore;
   }
 
-  public void setStartedOnOrBefore(Date startedOnOrBefore) {
+  public void setStartedOnOrBefore(final Date startedOnOrBefore) {
     this.startedOnOrBefore = startedOnOrBefore;
   }
 
   public Location getLocation() {
-    return location;
+    return this.location;
   }
 
-  public void setLocation(Location location) {
+  public void setLocation(final Location location) {
     this.location = location;
   }
 
   public TimeQualifier getWhich() {
-    return which;
+    return this.which;
   }
 
-  public void setWhich(TimeQualifier which) {
+  public void setWhich(final TimeQualifier which) {
     this.which = which;
   }
 }

@@ -173,7 +173,7 @@ public class XLSXGenerator {
 
   private static Comment generateCellComment(
       Sheet sheet, CreationHelper factory, Row row, Cell cell, String message) {
-    Drawing drawing = ((Sheet) sheet).createDrawingPatriarch();
+    Drawing drawing = sheet.createDrawingPatriarch();
 
     // When the comment box is visible, have it show in a 1x3 space
     ClientAnchor anchor = factory.createClientAnchor();

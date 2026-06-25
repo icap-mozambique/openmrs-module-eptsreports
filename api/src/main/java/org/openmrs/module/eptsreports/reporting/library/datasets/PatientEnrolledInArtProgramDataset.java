@@ -54,6 +54,7 @@ public class PatientEnrolledInArtProgramDataset extends BaseDataSet {
     return dataSetDefinition;
   }
 
+  @Override
   public List<Parameter> getParameters() {
     List<Parameter> parameters = new ArrayList<Parameter>();
     parameters.add(ReportingConstants.START_DATE_PARAMETER);

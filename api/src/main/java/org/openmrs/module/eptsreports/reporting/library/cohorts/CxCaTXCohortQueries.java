@@ -19,6 +19,7 @@ public class CxCaTXCohortQueries {
   @Autowired private TxCurrCohortQueries txCurrCohortQueries;
   @Autowired private CxCaSCRNCohortQueries CxCaSCRNCohortQueries;
   @Autowired private GenericCohortQueries genericCohortQueries;
+  @Autowired private TxNewCohortQueries txNewCohortQueries;
 
   @DocumentedDefinition(value = "findPatientsWhoerceivedTreatmentTypeDuringReportingPeriod")
   public CohortDefinition findPatientsWhoerceivedTreatmentTypeDuringReportingPeriod() {
@@ -37,8 +38,8 @@ public class CxCaTXCohortQueries {
 
   @DocumentedDefinition(
       value = "getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodTotalDenominator")
-  public CohortDefinition
-      getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator() {
+  public CohortDefinition getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodTotalDenominator");
@@ -51,7 +52,7 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "TXCURR",
         EptsReportUtils.map(
-            txCurrCohortQueries.findPatientsWhoAreActiveOnART(),
+            this.txCurrCohortQueries.findPatientsWhoAreActiveOnART(),
             "endDate=${endDate},location=${location}"));
     definition.addSearch(
         "CX-TX-DENOMINATOR",
@@ -60,12 +61,27 @@ public class CxCaTXCohortQueries {
 
     definition.setCompositionString("(TXCURR AND CX-TX-DENOMINATOR)");
 
+    if (isCommunity) {
+      final CohortDefinition communityDispensation =
+          this.txNewCohortQueries.communityDispensation();
+
+      definition.addSearch(
+          "COMMUNITY-DISPENSATION",
+          EptsReportUtils.map(
+              communityDispensation,
+              EptsReportUtils.removeMissingParameterMappingsFromCohortDefintion(
+                  communityDispensation, mappings)));
+
+      definition.setCompositionString("(TXCURR AND CX-TX-DENOMINATOR AND COMMUNITY-DISPENSATION)");
+    }
+
     return definition;
   }
 
   @DocumentedDefinition(
       value = "getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean")
-  public CohortDefinition getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean() {
+  public CohortDefinition getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(
+      final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -78,13 +94,14 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-TX-DENOMINATOR",
         EptsReportUtils.map(
-            this.getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(),
+            this.getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(
+                isCommunity),
             mappings));
 
     definition.addSearch(
         "PREVIOUS",
         EptsReportUtils.map(
-            CxCaSCRNCohortQueries
+            this.CxCaSCRNCohortQueries
                 .findPatientsWithScreeningTestForCervicalCancerPreviousReportingPeriod(),
             mappings));
 
@@ -97,7 +114,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreeanCryotherapyDesagregations")
   public CohortDefinition
-      getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodFirstScreeanCryotherapyDesagregations() {
+      getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodFirstScreeanCryotherapyDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -110,7 +128,7 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-TX-FIRST-SCREEN",
         EptsReportUtils.map(
-            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(),
+            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(isCommunity),
             mappings));
 
     definition.addSearch(
@@ -131,7 +149,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreeanThermocoagulationDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreeanThermocoagulationDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreeanThermocoagulationDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -144,7 +163,7 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-TX-FIRST-SCREEN",
         EptsReportUtils.map(
-            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(),
+            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(isCommunity),
             mappings));
 
     definition.addSearch(
@@ -165,7 +184,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreeanLeepDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreeanLeepDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreeanLeepDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -178,7 +198,7 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-TX-FIRST-SCREEN",
         EptsReportUtils.map(
-            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(),
+            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(isCommunity),
             mappings));
 
     definition.addSearch(
@@ -199,7 +219,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -212,13 +233,14 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-TX-DENOMINATOR",
         EptsReportUtils.map(
-            this.getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(),
+            this.getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(
+                isCommunity),
             mappings));
 
     definition.addSearch(
         "NEGATIVE",
         EptsReportUtils.map(
-            CxCaSCRNCohortQueries
+            this.CxCaSCRNCohortQueries
                 .findPatientWithScreeningTypeVisitAsRescreenedAfterPreviousNegative(),
             mappings));
 
@@ -231,7 +253,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeCryotherapyDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeCryotherapyDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeCryotherapyDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -245,7 +268,8 @@ public class CxCaTXCohortQueries {
         "CX-RN",
         EptsReportUtils.map(
             this
-                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(),
+                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(
+                    isCommunity),
             mappings));
 
     definition.addSearch(
@@ -266,7 +290,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeThermocoagulationDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeThermocoagulationDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeThermocoagulationDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -280,7 +305,8 @@ public class CxCaTXCohortQueries {
         "CX-RN",
         EptsReportUtils.map(
             this
-                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(),
+                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(
+                    isCommunity),
             mappings));
 
     definition.addSearch(
@@ -301,7 +327,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeLeepDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeLeepDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegativeLeepDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -315,7 +342,8 @@ public class CxCaTXCohortQueries {
         "CX-RN",
         EptsReportUtils.map(
             this
-                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(),
+                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(
+                    isCommunity),
             mappings));
 
     definition.addSearch(
@@ -335,7 +363,8 @@ public class CxCaTXCohortQueries {
   @DocumentedDefinition(
       value = "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -348,13 +377,14 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-TX-DENOMINATOR",
         EptsReportUtils.map(
-            this.getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(),
+            this.getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(
+                isCommunity),
             mappings));
 
     definition.addSearch(
         "POST-TRETMENT",
         EptsReportUtils.map(
-            CxCaSCRNCohortQueries.findpatientwithScreeningTypeVisitAsPostTreatmentFollowUp(),
+            this.CxCaSCRNCohortQueries.findpatientwithScreeningTypeVisitAsPostTreatmentFollowUp(),
             mappings));
 
     definition.setCompositionString("(CX-TX-DENOMINATOR AND POST-TRETMENT)");
@@ -366,7 +396,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpCryotherapyDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpCryotherapyDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpCryotherapyDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -379,7 +410,8 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-PT",
         EptsReportUtils.map(
-            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(),
+            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(
+                isCommunity),
             mappings));
 
     definition.addSearch(
@@ -400,7 +432,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpThermocoagulationDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpThermocoagulationDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpThermocoagulationDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -413,7 +446,8 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-PT",
         EptsReportUtils.map(
-            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(),
+            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(
+                isCommunity),
             mappings));
 
     definition.addSearch(
@@ -434,7 +468,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpLeepDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpLeepDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUpLeepDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName(
@@ -448,7 +483,8 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-PT",
         EptsReportUtils.map(
-            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(),
+            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(
+                isCommunity),
             mappings));
 
     definition.addSearch(
@@ -469,7 +505,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName("getPatientsWhoerceivedTreatmentTypeDuringReportingPeriodFirstScreean");
@@ -482,33 +519,36 @@ public class CxCaTXCohortQueries {
     definition.addSearch(
         "CX-TX-DENOMINATOR",
         EptsReportUtils.map(
-            this.getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(),
+            this.getPatientsWhoReceivedTreatmentTypeDuringReportingPeriodTotalDenominator(
+                isCommunity),
             mappings));
 
     definition.addSearch(
         "CX-RP",
         EptsReportUtils.map(
-            CxCaSCRNCohortQueries
+            this.CxCaSCRNCohortQueries
                 .findPatientWithScreeningTypeVisitAsRescreenedAfterPreviousPositive(),
             mappings));
 
     definition.addSearch(
         "FIRST-SCREEN",
         EptsReportUtils.map(
-            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(),
+            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodFirstScreean(isCommunity),
             mappings));
 
     definition.addSearch(
         "CX-RN",
         EptsReportUtils.map(
             this
-                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(),
+                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousNegative(
+                    isCommunity),
             mappings));
 
     definition.addSearch(
         "CX-PT",
         EptsReportUtils.map(
-            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(),
+            this.getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodPostTreatmentFollowUp(
+                isCommunity),
             mappings));
 
     definition.setCompositionString(
@@ -521,7 +561,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveCryotherapypDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveCryotherapypDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveCryotherapypDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName(
@@ -536,7 +577,8 @@ public class CxCaTXCohortQueries {
         "CX-POSITIVE",
         EptsReportUtils.map(
             this
-                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive(),
+                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive(
+                    isCommunity),
             mappings));
 
     definition.addSearch(
@@ -557,7 +599,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveThermocoagulationDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveThermocoagulationDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveThermocoagulationDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName(
@@ -572,7 +615,8 @@ public class CxCaTXCohortQueries {
         "CX-POSITIVE",
         EptsReportUtils.map(
             this
-                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive(),
+                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive(
+                    isCommunity),
             mappings));
 
     definition.addSearch(
@@ -593,7 +637,8 @@ public class CxCaTXCohortQueries {
       value =
           "getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveLeepDesagregations")
   public CohortDefinition
-      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveLeepDesagregations() {
+      getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositiveLeepDesagregations(
+          final Boolean isCommunity) {
     final CompositionCohortDefinition definition = new CompositionCohortDefinition();
 
     definition.setName(
@@ -608,7 +653,8 @@ public class CxCaTXCohortQueries {
         "CX-POSITIVE",
         EptsReportUtils.map(
             this
-                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive(),
+                .getPatientsWhoeReceivedTreatmentTypeDuringReportingPeriodRescreenedAfterPreviousPositive(
+                    isCommunity),
             mappings));
 
     definition.addSearch(

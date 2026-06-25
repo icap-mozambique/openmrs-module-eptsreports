@@ -119,6 +119,7 @@ public class SetupTB5 extends EptsDataExportManager {
     return Arrays.asList(reportDesign);
   }
 
+  @Override
   public List<Parameter> getParameters() {
     return Arrays.asList(
         new Parameter("endDate", "  End Date", Date.class),
