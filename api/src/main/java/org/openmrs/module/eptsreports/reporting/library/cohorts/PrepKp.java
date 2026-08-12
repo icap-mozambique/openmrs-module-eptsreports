@@ -1,40 +1,44 @@
-/**
- *
- */
+/** */
 package org.openmrs.module.eptsreports.reporting.library.cohorts;
 
-/**
- * @author Stélio Moiane
- *
- */
+/** @author Stélio Moiane */
 public enum PrepKp {
+  MILITARY(1902, "military"),
 
-	MILITARY(1902, "Militar"),
+  MINER(1908, "miner"),
 
-	MINER(1908, "Mineiro"),
+  DRIVER(1903, "driver"),
 
-	DRIVER(1903, "Camionista"),
+  COUPLES_RESULT_ARE_DIFFERENT(1995, "couples-result"),
 
-	COUPLES_RESULT_ARE_DIFFERENT(1995, "Casais Serodiscordantes"),
+  PREGNANT(1982, "pregnant"),
 
-	PREGNANT(1982, "Grávida"),
+  BREASTFEEDING(6332, "breastfeeding"),
 
-	BREASTFEEDING(6332, "Lactante");
+  HOMOSEXUAL(1377, "homosexual"),
 
-	private int id;
+  DRUG_USER(20454, "drug-user"),
 
-	private String name;
+  PRISIONER(20426, "prisioner"),
 
-	PrepKp(final int id, final String name) {
-		this.id = id;
-		this.name = name;
-	}
+  SEX_WORKER(1901, "sex-worker"),
 
-	public int getId() {
-		return this.id;
-	}
+  ADOLESCENTS_AND_YOUTH_AT_RISK(165287, "adolescents-at-risk");
 
-	public String getName() {
-		return this.name;
-	}
+  private int id;
+
+  private String name;
+
+  PrepKp(final int id, final String name) {
+    this.id = id;
+    this.name = name;
+  }
+
+  public int getId() {
+    return this.id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
 }

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-
 import org.openmrs.module.eptsreports.reporting.library.cohorts.GenericCohortQueries;
 import org.openmrs.module.eptsreports.reporting.library.datasets.PrepReportDataset;
 import org.openmrs.module.eptsreports.reporting.reports.manager.EptsPeriodIndicatorDataExportManager;
@@ -32,70 +31,70 @@ import org.springframework.stereotype.Component;
 @Component
 public class SetupPREPReport extends EptsPeriodIndicatorDataExportManager {
 
-	@Autowired
-	private PrepReportDataset prepReportDataset;
+  @Autowired private PrepReportDataset prepReportDataset;
 
-	@Autowired
-	protected GenericCohortQueries genericCohortQueries;
+  @Autowired protected GenericCohortQueries genericCohortQueries;
 
-	@Override
-	public String getVersion() {
-		return "1.0-SNAPSHOT";
-	}
+  @Override
+  public String getVersion() {
+    return "1.0-SNAPSHOT";
+  }
 
-	@Override
-	public String getUuid() {
-		return "3e9ba8b4-d089-4005-8fef-6d01e41a2aef";
-	}
+  @Override
+  public String getUuid() {
+    return "3e9ba8b4-d089-4005-8fef-6d01e41a2aef";
+  }
 
-	@Override
-	public String getExcelDesignUuid() {
-		return "9062cd94-b2ac-4a93-a318-2dfe3a58ecd3";
-	}
+  @Override
+  public String getExcelDesignUuid() {
+    return "9062cd94-b2ac-4a93-a318-2dfe3a58ecd3";
+  }
 
-	@Override
-	public String getName() {
-		return "PREP CDC";
-	}
+  @Override
+  public String getName() {
+    return "PREP CDC REPORT";
+  }
 
-	@Override
-	public String getDescription() {
-		return "PREP CDC";
-	}
+  @Override
+  public String getDescription() {
+    return "PREP CDC REPORT";
+  }
 
-	@Override
-	public PeriodIndicatorReportDefinition constructReportDefinition() {
+  @Override
+  public PeriodIndicatorReportDefinition constructReportDefinition() {
 
-		final PeriodIndicatorReportDefinition reportDefinition = SetupResumoMensalReport.getDefaultPeriodIndicatorReportDefinition();
+    final PeriodIndicatorReportDefinition reportDefinition =
+        SetupResumoMensalReport.getDefaultPeriodIndicatorReportDefinition();
 
-		reportDefinition.setUuid(this.getUuid());
-		reportDefinition.setName(this.getName());
-		reportDefinition.setDescription(this.getDescription());
-		reportDefinition.setParameters(this.prepReportDataset.getParameters());
+    reportDefinition.setUuid(this.getUuid());
+    reportDefinition.setName(this.getName());
+    reportDefinition.setDescription(this.getDescription());
+    reportDefinition.setParameters(this.prepReportDataset.getParameters());
 
-		reportDefinition.addDataSetDefinition(
-				"PREP", Mapped.mapStraightThrough(this.prepReportDataset.getPrepReportDataSetDefinition()));
+    reportDefinition.addDataSetDefinition(
+        "PREP", Mapped.mapStraightThrough(this.prepReportDataset.getPrepReportDataSetDefinition()));
 
-		return reportDefinition;
-	}
+    return reportDefinition;
+  }
 
-	@Override
-	public List<ReportDesign> constructReportDesigns(final ReportDefinition reportDefinition) {
-		ReportDesign reportDesign = null;
-		try {
-			reportDesign = this.createXlsReportDesign(
-					reportDefinition,
-					"PREP_CDC_REPORT.xls",
-					"PREP CDC REPORT",
-					this.getExcelDesignUuid(),
-					null);
-			final Properties props = new Properties();
-			props.put("sortWeight", "5000");
-			reportDesign.setProperties(props);
-		} catch (final IOException e) {
-			throw new ReportingException(e.toString());
-		}
+  @Override
+  public List<ReportDesign> constructReportDesigns(final ReportDefinition reportDefinition) {
+    ReportDesign reportDesign = null;
+    try {
+      reportDesign =
+          this.createXlsReportDesign(
+              reportDefinition,
+              "PREP_CDC_REPORT.xls",
+              "PREP CDC REPORT",
+              this.getExcelDesignUuid(),
+              null);
+      final Properties props = new Properties();
+      props.put("sortWeight", "5000");
+      reportDesign.setProperties(props);
+    } catch (final IOException e) {
+      throw new ReportingException(e.toString());
+    }
 
-		return Arrays.asList(reportDesign);
-	}
+    return Arrays.asList(reportDesign);
+  }
 }
